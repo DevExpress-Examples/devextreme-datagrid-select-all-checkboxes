@@ -11,7 +11,7 @@ $(function () {
         columns: [
             {
                 dataField: 'ProductID', 
-                allowGrouping: true 
+                allowGrouping: false 
             },
             'ProductName', {
                 dataField: 'Category.CategoryName',
