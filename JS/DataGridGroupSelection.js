@@ -9,7 +9,10 @@ $(function () {
             }
         },
         columns: [
-            'ProductID',
+            {
+                dataField: 'ProductID', 
+                allowGrouping: true 
+            },
             'ProductName', {
                 dataField: 'Category.CategoryName',
                 caption: 'Category',
