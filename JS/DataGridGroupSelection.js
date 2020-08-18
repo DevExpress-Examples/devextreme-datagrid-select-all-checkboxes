@@ -24,10 +24,11 @@ $(function () {
         ],
         onInitialized: function (e) {
             if (!helper) {
-                var grid = e.component;
-                helper = new GroupSelectionHelper(grid, myJsonObject, "ProductID");
-                grid.on("selectionChanged", helper.onGridSelectionChanged);
-                grid.option("customizeColumns", helper.onCustomizeColumns);
+                let grid = e.component;
+                // helper = new GroupSelectionHelper(grid, myJsonObject, "ProductID");
+                let check = new GroupSelectiontestHelper(grid, myJsonObject, "ProductID");
+                grid.on("selectionChanged", check.onGridSelectionChanged);
+                grid.option("customizeColumns", check.onCustomizeColumns);
             }
         },
         groupPanel: {
