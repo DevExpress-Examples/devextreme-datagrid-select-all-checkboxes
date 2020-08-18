@@ -1,6 +1,6 @@
 $(function () {
-    var helper = null;
-    var myGrid = $("#grid").dxDataGrid({
+    let helper = null;
+    $("#grid").dxDataGrid({
         dataSource: {
             store: {
                 type: 'array',
@@ -25,10 +25,9 @@ $(function () {
         onInitialized: function (e) {
             if (!helper) {
                 let grid = e.component;
-                // helper = new GroupSelectionHelper(grid, myJsonObject, "ProductID");
-                let check = new GroupSelectiontestHelper(grid, myJsonObject, "ProductID");
-                grid.on("selectionChanged", check.onGridSelectionChanged);
-                grid.option("customizeColumns", check.onCustomizeColumns);
+                helper = new GroupSelectionHelper(grid, myJsonObject, "ProductID");
+                grid.on("selectionChanged", helper.onGridSelectionChanged);
+                grid.option("customizeColumns", helper.onCustomizeColumns);
             }
         },
         groupPanel: {
@@ -61,5 +60,5 @@ $(function () {
         },
         width: '800px',
         height: '450px'
-    }).dxDataGrid("instance");
+    });
 });
