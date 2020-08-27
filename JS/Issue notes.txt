@@ -1,1 +1,2 @@
-groupIndex 1 selection may be incorrect when groupIndex 0 selection is removed
+0:14 - After Group: Code 2 is unselected, Code: 2 > "Category: Computer" remains checked. After pages are navigated, this CheckBox converts to a square.
+0:26 - After Code: 2 > "Category: Computer" is unchecked, Code: 1 > "Category: Computer" is also unchecked.
