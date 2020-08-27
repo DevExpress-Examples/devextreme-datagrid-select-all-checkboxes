@@ -25,10 +25,13 @@ class GroupSelectionHelper {
         let that = this;
         let colField = info.column.dataField.replace(".", "");
         let editorID = "groupCheckBox" + colField + info.data.key;
-        let rowKeys = this.getKeys(info.data, [], info.column.dataField);
+
+        //TODO: Consider GroupKey in getting row keys
+        debugger;
+        let rowKeys = this.getKeys(info.data, [], info.column.dataField, info.key);
         let defaultValue = this.checkIfKeysAreSelected(rowKeys, this.grid.getSelectedRowKeys());
 
-        debugger;
+    
         $('<div>')
             .addClass("customSelectionCheckBox")
             .attr("data-keys", JSON.stringify(rowKeys))
@@ -77,6 +80,9 @@ class GroupSelectionHelper {
                 keys.push(dataItems[i][this.keyFieldName]);
         }
 
+        // It'll only make sense to fix this part
+        // TODO: Pass all grouped column names. To do this, store groupFieldNamesArr in a global variable. 
+        // After a user changes grouping, use onOptionChanged to update this Array
         if (data.isContinuation || data.isContinuationOnNextPage)
             this.getKeysFromDataSource(keys, groupKey, groupedColumnName);
         // debugger;
@@ -101,7 +107,11 @@ class GroupSelectionHelper {
     }
 
     getKeysFromDataSource(keys, groupValue, fieldName) {
+        // ????? tf is this
+
         let colFields = fieldName.split(".");
+        debugger;
+        // use Query.filter instead
         let filteredKeys = $.grep(this.data, function (el) {
             let result = el;
             for (let index = 0; index < colFields.length; index++) {
@@ -110,13 +120,17 @@ class GroupSelectionHelper {
                 if (!$.isPlainObject(result))
                     break;
             }
+            debugger;
+            // To do 
             return result == groupValue;
         });
+        debugger;
         for (let i = 0; i < filteredKeys.length; i++) {
             let value = filteredKeys[i][this.keyFieldName];
             if (value && keys.indexOf(value) == -1) // invisible key
                 keys.push(value);
         }
+        debugger;
     }
 
     getValueFromArray(grid, keyValue, dataField) {
