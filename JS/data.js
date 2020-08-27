@@ -1,38 +1,40 @@
-var myJsonObject = [{
+var myJsonObject = [
+    {
     "ProductID": 1,
     "ProductName": "Whisk",
     "Category": {
         "CategoryName": "Kitchen"
     },
-    "GroupCode": 1
+    "GroupCode": "First"
 }, {
     "ProductID": 2,
     "ProductName": "Spatula",
     "Category": {
         "CategoryName": "Kitchen"
     },
-    "GroupCode": 1
+    "GroupCode": "First"
 }, {
     "ProductID": 3,
     "ProductName": "Wrench",
     "Category": {
         "CategoryName": "HandTool"
     },
-    "GroupCode": 1
+    "GroupCode": "First"
 }, {
     "ProductID": 4,
     "ProductName": "Hammer",
     "Category": {
         "CategoryName": "HandTool"
     },
-    "GroupCode": 1
-}, {
+    "GroupCode": "First"
+}, 
+{
     "ProductID": 5,
     "ProductName": "Keyboard",
     "Category": {
         "CategoryName": "Computer"
     },
-    "GroupCode": 2
+    "GroupCode": "Second"
 },
 {
     "ProductID": 6,
@@ -40,7 +42,7 @@ var myJsonObject = [{
     "Category": {
         "CategoryName": "Computer"
     },
-    "GroupCode": 2
+    "GroupCode": "Second"
 },
 {
     "ProductID": 7,
@@ -48,7 +50,7 @@ var myJsonObject = [{
     "Category": {
         "CategoryName": "Computer"
     },
-    "GroupCode": 2
+    "GroupCode": "Second"
 },
 {
     "ProductID": 8,
@@ -56,21 +58,21 @@ var myJsonObject = [{
     "Category": {
         "CategoryName": "HandTool"
     },
-    "GroupCode": 1
+    "GroupCode": "First"
 }, {
     "ProductID": 9,
     "ProductName": "Screwdriver",
     "Category": {
         "CategoryName": "HandTool"
     },
-    "GroupCode": 1
+    "GroupCode": "First"
 }, {
     "ProductID": 10,
     "ProductName": "Pliers",
     "Category": {
         "CategoryName": "HandTool"
     },
-    "GroupCode": 1
+    "GroupCode": "First"
 },
 {
     "ProductID": 11,
@@ -78,5 +80,5 @@ var myJsonObject = [{
     "Category": {
         "CategoryName": "Computer"
     },
-    "GroupCode": 1
+    "GroupCode": "First"
 },];

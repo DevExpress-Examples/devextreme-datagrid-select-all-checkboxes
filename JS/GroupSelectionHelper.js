@@ -28,6 +28,7 @@ class GroupSelectionHelper {
         let rowKeys = this.getKeys(info.data, [], info.column.dataField);
         let defaultValue = this.checkIfKeysAreSelected(rowKeys, this.grid.getSelectedRowKeys());
 
+        debugger;
         $('<div>')
             .addClass("customSelectionCheckBox")
             .attr("data-keys", JSON.stringify(rowKeys))
@@ -40,10 +41,13 @@ class GroupSelectionHelper {
                     if (that.customSelectionFlag)
                         return;
                     let rowKeys = e.element.data("keys");
-                    if (e.value)
+                    if (e.value) {
                         that.grid.selectRows(rowKeys, true);
-                    else
+                    }
+                    else {
                         that.grid.deselectRows(rowKeys);
+                    }
+                        
                 }
             })
     }
@@ -72,9 +76,10 @@ class GroupSelectionHelper {
             } else
                 keys.push(dataItems[i][this.keyFieldName]);
         }
+
         if (data.isContinuation || data.isContinuationOnNextPage)
             this.getKeysFromDataSource(keys, groupKey, groupedColumnName);
-
+        // debugger;
         return keys;
     }
 
