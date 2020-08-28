@@ -28,9 +28,10 @@ class GroupSelectionHelper {
         let groupedColumnNames = this.getGroupedColumns(that.grid);
         let colField = "",
             keyValuesStr = "";
-        groupedColumnNames.forEach(name => {
-            colField += name
-        })
+
+        for(let i = 0; i <= info.key.length - 1; i++) {
+            colField += groupedColumnNames[i]
+        }
         info.key.forEach(name => {
             keyValuesStr += name
         })
@@ -41,7 +42,7 @@ class GroupSelectionHelper {
         let rowKeys = this.getKeys(info.data, [], groupedColumnNames, info.key);
         let defaultValue = this.checkIfKeysAreSelected(rowKeys, this.grid.getSelectedRowKeys());
 
-    
+  
         $('<div>')
             .addClass("customSelectionCheckBox")
             .attr("data-keys", JSON.stringify(rowKeys))
