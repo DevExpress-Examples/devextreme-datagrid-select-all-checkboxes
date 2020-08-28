@@ -2,12 +2,14 @@ class GroupSelectionHelper {
     grid;
     data;
     keyFieldName;
+    groupFieldNames;
     customSelectionFlag;
 
-    constructor(grid, data, keyFieldName) {
+    constructor(grid, data, keyFieldName, groupFieldNames) {
         this.grid = grid;
         this.data = data;
         this.keyFieldName = keyFieldName;
+        this.groupFieldNames = groupFieldNames;
         this.customSelectionFlag = false;
 
         this.onCustomizeColumns = this.onCustomizeColumns.bind(this);
@@ -27,8 +29,9 @@ class GroupSelectionHelper {
         let editorID = "groupCheckBox" + colField + info.data.key;
 
         //TODO: Consider GroupKey in getting row keys
-        debugger;
-        let rowKeys = this.getKeys(info.data, [], info.column.dataField, info.key);
+        let groupedColumnNames = this.getGroupedColumns(that.grid);
+        // let rowKeys = this.getKeys(info.data, [], info.column.dataField, info.key);
+        let rowKeys = this.getKeys(info.data, [], groupedColumnNames, info.key);
         let defaultValue = this.checkIfKeysAreSelected(rowKeys, this.grid.getSelectedRowKeys());
 
     
@@ -57,16 +60,27 @@ class GroupSelectionHelper {
 
 
     getGroupedColumns(dataGrid) {
-        let colNames = [];
+        let colNames = [],
+            groupedColumns = [],
+            groupIndex = null;
+        // TODO: add sort?
         for (let i = 0; i < dataGrid.columnCount(); i++) {
-            if (dataGrid.columnOption(i, "groupIndex") > -1) {
-                colNames.push(dataGrid.columnOption(i, "dataField"));
+            groupIndex = dataGrid.columnOption(i, "groupIndex")
+            if (groupIndex > -1) {
+                groupedColumns.push({ 
+                    dataField: dataGrid.columnOption(i, "dataField"),
+                    groupIndex
+                });
             }
         }
+        groupedColumns.sort((a, b) => (a.groupIndex > b.groupIndex) ? 1 : -1)
+        groupedColumns.forEach(col => {
+            colNames.push(col.dataField);
+        })
         return colNames;
     }
 
-    getKeys(data, keys, groupedColumnName, groupKey) {
+    getKeys(data, keys, groupedColumnNames, groupKey) {
         if (!groupKey)
             groupKey = data.key;
 
@@ -75,7 +89,7 @@ class GroupSelectionHelper {
         for (let i = 0; i < dataItems.length; i++) {
             let childItems = dataItems[i].items || dataItems[i].collapsedItems;
             if (childItems) {
-                this.getKeys(dataItems[i], keys, groupedColumnName, groupKey);
+                this.getKeys(dataItems[i], keys, groupedColumnNames, groupKey);
             } else
                 keys.push(dataItems[i][this.keyFieldName]);
         }
@@ -84,8 +98,7 @@ class GroupSelectionHelper {
         // TODO: Pass all grouped column names. To do this, store groupFieldNamesArr in a global variable. 
         // After a user changes grouping, use onOptionChanged to update this Array
         if (data.isContinuation || data.isContinuationOnNextPage)
-            this.getKeysFromDataSource(keys, groupKey, groupedColumnName);
-        // debugger;
+            this.getKeysFromDataSource(keys, groupKey, groupedColumnNames);
         return keys;
     }
 
@@ -106,31 +119,37 @@ class GroupSelectionHelper {
             return undefined;
     }
 
-    getKeysFromDataSource(keys, groupValue, fieldName) {
-        // ????? tf is this
+    getKeysFromDataSource(keys, groupValue, fieldNames) {
 
-        let colFields = fieldName.split(".");
-        debugger;
-        // use Query.filter instead
-        let filteredKeys = $.grep(this.data, function (el) {
-            let result = el;
-            for (let index = 0; index < colFields.length; index++) {
-                let field = colFields[index];
-                result = result[field];
-                if (!$.isPlainObject(result))
-                    break;
-            }
-            debugger;
-            // To do 
-            return result == groupValue;
-        });
-        debugger;
+        // TODO: use Query.filter instead
+        // let colFields = fieldNames.split(".");
+        // let filteredKeys = $.grep(this.data, function (el) {
+        //     let result = el;
+        //     for (let index = 0; index < colFields.length; index++) {
+        //         let field = colFields[index];
+        //         result = result[field];
+        //         if (!$.isPlainObject(result))
+        //             break;
+        //     }
+        //     // To do 
+        //     return result == groupValue;
+        // });
+        
+        let query = DevExpress.data.query(this.data)
+        let filterExpr = []
+        for(let i = 0; i < groupValue.length; i++) {
+            filterExpr.push([fieldNames[i], "=", groupValue[i]])
+        }
+        let filteredKeys = query
+            .filter(filterExpr)
+            .toArray();
+
         for (let i = 0; i < filteredKeys.length; i++) {
             let value = filteredKeys[i][this.keyFieldName];
             if (value && keys.indexOf(value) == -1) // invisible key
                 keys.push(value);
         }
-        debugger;
+
     }
 
     getValueFromArray(grid, keyValue, dataField) {
