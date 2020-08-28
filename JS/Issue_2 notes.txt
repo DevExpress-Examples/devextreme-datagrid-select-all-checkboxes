@@ -1,0 +1,4 @@
+After Group Code: Second is checked, Group Code: Second > Category: Computer, is not shown as checked in the UI.
+
+
+Issue occurs when not all of a group's items are visible.
