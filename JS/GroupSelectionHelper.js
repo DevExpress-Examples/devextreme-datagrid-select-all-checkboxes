@@ -18,42 +18,27 @@ class GroupSelectionHelper {
     }
 
     onCustomizeColumns(columns) {
-        $.each(columns, function (_, element) {
-            element.groupCellTemplate = this.groupCellTemplate;
-        }.bind(this));
+        columns.forEach(col => {
+            col.groupCellTemplate = this.groupCellTemplate;
+        })
     }
 
     groupCellTemplate(groupCell, info) {
-        let that = this;
-        let groupedColumnNames = this.getGroupedColumns(that.grid);
-        let colField = "",
+        let that = this,
+            groupedColumnNames = this.getGroupedColumns(that.grid),
             keyValuesStr = "",
             currGroupColumn = [];
 
-
-        // for(let i = 0; i <= info.key.length - 1; i++) {
-        //     // currGroupColumn.push(groupedColumnNames[i])
-        //     colField += groupedColumnNames[i]
-        // }
-        
-
-        // info.key.forEach(name => {
-        //     keyValuesStr += name
-        // })
-        // colField = colField.replace(".", "");
-        // let editorID = "groupCheckBox" + colField + keyValuesStr;
-
-        for(let i = 0; i <= info.key.length - 1; i++) {
+        for (let i = 0; i <= info.key.length - 1; i++) {
             currGroupColumn.push(groupedColumnNames[i])
         }
         info.key.forEach(name => {
             keyValuesStr += name
         })
 
-        let editorID = this.getEditorName(currGroupColumn, keyValuesStr)
-
-        let rowKeys = this.getKeys(info.data, [], groupedColumnNames, info.key);
-        let defaultValue = this.checkIfKeysAreSelected(rowKeys, this.grid.getSelectedRowKeys());
+        let editorID = this.getEditorName(currGroupColumn, keyValuesStr),
+            rowKeys = this.getKeys(info.data, [], groupedColumnNames, info.key),
+            defaultValue = this.checkIfKeysAreSelected(rowKeys, this.grid.getSelectedRowKeys());
 
         $('<div>')
             .addClass("customSelectionCheckBox")
@@ -66,18 +51,16 @@ class GroupSelectionHelper {
                 onValueChanged: function (e) {
                     if (that.customSelectionFlag)
                         return;
+
                     let rowKeys = e.element.data("keys");
-                    if (e.value) {
+
+                    if (e.value)
                         that.grid.selectRows(rowKeys, true);
-                    }
-                    else {
+                    else
                         that.grid.deselectRows(rowKeys);
-                    }
-                        
                 }
             })
     }
-
 
     getGroupedColumns(dataGrid) {
         let colNames = [],
@@ -87,7 +70,7 @@ class GroupSelectionHelper {
         for (let i = 0; i < dataGrid.columnCount(); i++) {
             groupIndex = dataGrid.columnOption(i, "groupIndex")
             if (groupIndex > -1) {
-                groupedColumns.push({ 
+                groupedColumns.push({
                     dataField: dataGrid.columnOption(i, "dataField"),
                     groupIndex
                 });
@@ -108,14 +91,15 @@ class GroupSelectionHelper {
 
         for (let i = 0; i < dataItems.length; i++) {
             let childItems = dataItems[i].items || dataItems[i].collapsedItems;
-            if (childItems) {
+            if (childItems)
                 this.getKeys(dataItems[i], keys, groupedColumnNames, groupKey);
-            } else
+            else
                 keys.push(dataItems[i][this.keyFieldName]);
         }
 
         if (data.isContinuation || data.isContinuationOnNextPage)
             this.getKeysFromDataSource(keys, groupKey, groupedColumnNames);
+
         return keys;
     }
 
@@ -143,9 +127,10 @@ class GroupSelectionHelper {
         let query = DevExpress.data.query(this.data),
             filterExpr = [];
 
-        for(let i = 0; i < groupValue.length; i++) {
+        for (let i = 0; i < groupValue.length; i++) {
             filterExpr.push([fieldNames[i], "=", groupValue[i]])
         }
+
         let filteredKeys = query
             .filter(filterExpr)
             .toArray();
@@ -158,33 +143,33 @@ class GroupSelectionHelper {
 
     }
 
-    getValueFromArray(grid, keyValue, isSelected, groupedColumnNames) {
+    getValueFromArray(grid, keyValue, groupedColumnNames, isSelected) {
         let that = this,
             selection = [];
-        //TODO: pass selected/deselected data to this
-        if(isSelected) {
+            
+        if (isSelected) {
             selection = grid.getSelectedRowsData();
         }
-        
+
         if (selection.length == 0) {
             selection = this.data;
         }
-         
-        // TODO: change to native JS
-        let data = $.grep(selection, function (el) { return el[that.keyFieldName] == keyValue })[0];
+
+        let data = selection.find(e => e[that.keyFieldName] === keyValue);
+
         if (!data) {
             return null
         }
-            
+
         let returnVal = ""
         groupedColumnNames.forEach(field => {
             let isFieldObject = field.indexOf('.');
-            if(isFieldObject) {
+            if (isFieldObject) {
                 let splitFields = field.split("."),
                     tempVal = data;
-                for(let i = 0; i < splitFields.length; i++) {
+                for (let i = 0; i < splitFields.length; i++) {
                     tempVal = tempVal[splitFields[i]];
-                    if(!(tempVal instanceof Object)) {
+                    if (!(tempVal instanceof Object)) {
                         break;
                     }
                 }
@@ -195,37 +180,31 @@ class GroupSelectionHelper {
         })
         return returnVal
 
-        
+
     }
 
     synchronizeCheckBoxes(grid, keys, groupedColumnNames, isSelected) {
         if (!keys || keys.length == 0 || !groupedColumnNames || !grid)
             return;
-        let synchronizedCheckBoxes = [];
-        // TODO: When a group checkbox is selected, synchronize checkboxes that are not in the same groupIndex level
-        // Need to add a currColumnName parameter. How to get this?
-        // Test Cases:
-        // Case 1: 
-        // Check 1 > HandTools
-        // Expected output - Check all group CheckBoxes with 1 or 1 > HandTools
-        let currGroupColumn= [];
+        let synchronizedCheckBoxes = [],
+            currGroupColumn = [];
 
         for (let j = 0; j < groupedColumnNames.length; j++) {
-            currGroupColumn.push(groupedColumnNames[j]) 
+            currGroupColumn.push(groupedColumnNames[j])
 
             for (let i = 0; i < keys.length; i++) {
                 let keyValue = keys[i],
                     groupRowValue = this.getGroupRowValue(currGroupColumn, grid, keyValue, isSelected),
                     editorName = this.getEditorName(currGroupColumn, groupRowValue)
-                
+
                 if (synchronizedCheckBoxes.indexOf(editorName) > -1) // this editor was checked
                     continue;
 
                 synchronizedCheckBoxes.push(editorName);
 
-                let checkBoxEl = $("#" + editorName);
-                let value = isSelected;
-                let rowKeys = $(checkBoxEl).data("keys");
+                let checkBoxEl = $("#" + editorName),
+                    value = isSelected,
+                    rowKeys = $(checkBoxEl).data("keys");
 
                 if (value && rowKeys)
                     value = this.checkIfKeysAreSelected(rowKeys, keys);
@@ -239,21 +218,21 @@ class GroupSelectionHelper {
     }
 
     getGroupRowValue(groupedColumnNames, grid, keyValue, isSelected) {
-        let rowIndex = grid.getRowIndexByKey(keyValue);
-
-        let groupRowValue = "",
+        let rowIndex = grid.getRowIndexByKey(keyValue),
+            groupRowValue = "",
             val;
-        if(rowIndex !== -1) {
+
+        if (rowIndex !== -1) {
             groupedColumnNames.forEach(name => {
                 val = grid.cellValue(rowIndex, name);
-                if(!val) 
+                if (!val)
                     groupRowValue += val
             })
         }
-        
-        if (!groupRowValue) {
-            groupRowValue = this.getValueFromArray(grid, keyValue, isSelected, groupedColumnNames);
-        }
+
+        if (!groupRowValue)
+            groupRowValue = this.getValueFromArray(grid, keyValue, groupedColumnNames, isSelected);
+
         return groupRowValue;
     }
 
@@ -264,14 +243,14 @@ class GroupSelectionHelper {
             colField += name
         })
         colField = colField.replace(".", "");
-        
+
         return "groupCheckBox" + colField + groupRowValue;
     }
 
     onGridSelectionChanged(args) {
-        let keys = args.selectedRowKeys;
-        let grid = args.component;
-        let groupedColumnNames = this.getGroupedColumns(grid);
+        let keys = args.selectedRowKeys,
+            grid = args.component,
+            groupedColumnNames = this.getGroupedColumns(grid);
 
         if (groupedColumnNames.length == 0)
             return;
