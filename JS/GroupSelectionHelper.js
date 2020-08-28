@@ -27,18 +27,31 @@ class GroupSelectionHelper {
         let that = this;
         let groupedColumnNames = this.getGroupedColumns(that.grid);
         let colField = "",
-            keyValuesStr = "";
+            keyValuesStr = "",
+            currGroupColumn = [];
+
+
+        // for(let i = 0; i <= info.key.length - 1; i++) {
+        //     // currGroupColumn.push(groupedColumnNames[i])
+        //     colField += groupedColumnNames[i]
+        // }
+        
+
+        // info.key.forEach(name => {
+        //     keyValuesStr += name
+        // })
+        // colField = colField.replace(".", "");
+        // let editorID = "groupCheckBox" + colField + keyValuesStr;
 
         for(let i = 0; i <= info.key.length - 1; i++) {
-            colField += groupedColumnNames[i]
+            currGroupColumn.push(groupedColumnNames[i])
         }
         info.key.forEach(name => {
             keyValuesStr += name
         })
-        colField = colField.replace(".", "");
-        let editorID = "groupCheckBox" + colField + keyValuesStr;
 
-        // let rowKeys = this.getKeys(info.data, [], info.column.dataField, info.key);
+        let editorID = this.getEditorName(currGroupColumn, keyValuesStr)
+
         let rowKeys = this.getKeys(info.data, [], groupedColumnNames, info.key);
         let defaultValue = this.checkIfKeysAreSelected(rowKeys, this.grid.getSelectedRowKeys());
 
@@ -108,26 +121,28 @@ class GroupSelectionHelper {
 
     checkIfKeysAreSelected(currentKeys, selectedKeys) {
         let count = 0;
+
         if (selectedKeys.length == 0)
             return false;
+
         for (let i = 0; i < currentKeys.length; i++) {
             let keyValue = currentKeys[i];
             if (selectedKeys.indexOf(keyValue) > -1) // key is not selected
                 count++;
         }
+
         if (count == 0)
             return false;
-        if (currentKeys.length == count)
+        else if (currentKeys.length == count)
             return true;
         else
             return undefined;
     }
 
     getKeysFromDataSource(keys, groupValue, fieldNames) {
+        let query = DevExpress.data.query(this.data),
+            filterExpr = [];
 
-        // TODO: use Query.filter instead
-        let query = DevExpress.data.query(this.data)
-        let filterExpr = []
         for(let i = 0; i < groupValue.length; i++) {
             filterExpr.push([fieldNames[i], "=", groupValue[i]])
         }
@@ -151,18 +166,16 @@ class GroupSelectionHelper {
             selection = grid.getSelectedRowsData();
         }
         
-
         if (selection.length == 0) {
             selection = this.data;
         }
-            
+         
+        // TODO: change to native JS
         let data = $.grep(selection, function (el) { return el[that.keyFieldName] == keyValue })[0];
         if (!data) {
             return null
         }
             
-        
-        // get value of each dataField in dataFields from the result variable.
         let returnVal = ""
         groupedColumnNames.forEach(field => {
             let isFieldObject = field.indexOf('.');
@@ -189,7 +202,6 @@ class GroupSelectionHelper {
         if (!keys || keys.length == 0 || !groupedColumnNames || !grid)
             return;
         let synchronizedCheckBoxes = [];
-
         // TODO: When a group checkbox is selected, synchronize checkboxes that are not in the same groupIndex level
         // Need to add a currColumnName parameter. How to get this?
         // Test Cases:
@@ -199,25 +211,13 @@ class GroupSelectionHelper {
         let currGroupColumn= [];
 
         for (let j = 0; j < groupedColumnNames.length; j++) {
-            currGroupColumn.push(groupedColumnNames[j]) // LAST LINE I TOUCHED
+            currGroupColumn.push(groupedColumnNames[j]) 
 
             for (let i = 0; i < keys.length; i++) {
-                let keyValue = keys[i];
+                let keyValue = keys[i],
+                    groupRowValue = this.getGroupRowValue(currGroupColumn, grid, keyValue, isSelected),
+                    editorName = this.getEditorName(currGroupColumn, groupRowValue)
                 
-                
-
-                let groupRowValue = this.getGroupRowValue(currGroupColumn, grid, keyValue, isSelected)
-
-                //TODO: create function for getting editorName
-                let colField = "",
-                    keyValuesStr = "";
-                currGroupColumn.forEach(name => {
-                    colField += name
-                })
-                colField = colField.replace(".", "");
-                let editorName = "groupCheckBox" + colField + groupRowValue;
-                
-
                 if (synchronizedCheckBoxes.indexOf(editorName) > -1) // this editor was checked
                     continue;
 
@@ -235,15 +235,11 @@ class GroupSelectionHelper {
                 if (editor)
                     editor.option("value", value);
             }
-            
         }
-        debugger;
-        
     }
 
     getGroupRowValue(groupedColumnNames, grid, keyValue, isSelected) {
         let rowIndex = grid.getRowIndexByKey(keyValue);
-        // let columnField = groupedColumnNames[j];
 
         let groupRowValue = "",
             val;
@@ -261,6 +257,17 @@ class GroupSelectionHelper {
         return groupRowValue;
     }
 
+    getEditorName(groupColumnNames, groupRowValue) {
+        let colField = "";
+
+        groupColumnNames.forEach(name => {
+            colField += name
+        })
+        colField = colField.replace(".", "");
+        
+        return "groupCheckBox" + colField + groupRowValue;
+    }
+
     onGridSelectionChanged(args) {
         let keys = args.selectedRowKeys;
         let grid = args.component;
@@ -268,10 +275,9 @@ class GroupSelectionHelper {
 
         if (groupedColumnNames.length == 0)
             return;
+
         this.customSelectionFlag = true;
-        debugger;
         this.synchronizeCheckBoxes(grid, args.currentDeselectedRowKeys, groupedColumnNames, false);
-        debugger;
         this.synchronizeCheckBoxes(grid, keys, groupedColumnNames, true);
         this.customSelectionFlag = false;
     }
