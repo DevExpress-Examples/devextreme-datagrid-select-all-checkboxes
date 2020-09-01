@@ -26,19 +26,15 @@ class GroupSelectionHelper {
     groupCellTemplate(groupCell, info) {
         let that = this,
             groupedColumnNames = this.getGroupedColumns(that.grid),
-            keyValuesStr = "",
             currGroupColumn = [];
 
         for (let i = 0; i <= info.key.length - 1; i++) {
             currGroupColumn.push(groupedColumnNames[i])
         }
-        info.key.forEach(name => {
-            keyValuesStr += name
-        })
-
-        let editorID = this.getEditorName(currGroupColumn, keyValuesStr),
-            rowKeys = this.getKeys(info.data, [], groupedColumnNames, info.key),
+        let rowKeys = this.getKeys(info.data, [], groupedColumnNames, info.key),
             defaultValue = this.checkIfKeysAreSelected(rowKeys, this.grid.getSelectedRowKeys());
+
+        let editorID = this.getEditorName(currGroupColumn, info.key)
 
         $('<div>')
             .addClass("customSelectionCheckBox")
@@ -143,7 +139,7 @@ class GroupSelectionHelper {
 
     }
 
-    getValueFromArray(grid, keyValue, groupedColumnNames, isSelected) {
+    getValueFromArray(groupedColumnNames, grid, itemKey, isSelected) {
         let that = this,
             selection = [];
             
@@ -155,7 +151,7 @@ class GroupSelectionHelper {
             selection = this.data;
         }
 
-        let data = selection.find(e => e[that.keyFieldName] === keyValue);
+        let data = selection.find(e => e[that.keyFieldName] === itemKey);
 
         if (!data) {
             return null
@@ -193,9 +189,11 @@ class GroupSelectionHelper {
             currGroupColumn.push(groupedColumnNames[j])
 
             for (let i = 0; i < keys.length; i++) {
-                let keyValue = keys[i],
-                    groupRowValue = this.getGroupRowValue(currGroupColumn, grid, keyValue, isSelected),
-                    editorName = this.getEditorName(currGroupColumn, groupRowValue)
+                let currItemKey = keys[i]
+                    // groupRowValue = this.getGroupRowValue(currGroupColumn, grid, keyValue, isSelected),
+                    // editorName = this.getEditorName(currGroupColumn, groupRowValue)
+
+                let editorName = this.getEditorName(currGroupColumn, [], grid, isSelected, currItemKey)
 
                 if (synchronizedCheckBoxes.indexOf(editorName) > -1) // this editor was checked
                     continue;
@@ -214,37 +212,55 @@ class GroupSelectionHelper {
                 if (editor)
                     editor.option("value", value);
             }
+            
         }
+        debugger;
     }
 
-    getGroupRowValue(groupedColumnNames, grid, keyValue, isSelected) {
-        let rowIndex = grid.getRowIndexByKey(keyValue),
-            groupRowValue = "",
-            val;
+    getGroupRowValue(groupedColumnNames, groupKey, grid, isSelected, itemKey) {
 
-        if (rowIndex !== -1) {
-            groupedColumnNames.forEach(name => {
-                val = grid.cellValue(rowIndex, name);
-                if (!val)
-                    groupRowValue += val
+        if(itemKey) {
+            let rowIndex = grid.getRowIndexByKey(itemKey),
+                groupRowValueStr = "",
+                val;
+            if (rowIndex !== -1) {
+                groupedColumnNames.forEach(name => {
+                    val = grid.cellValue(rowIndex, name);
+                    if (!val)
+                    groupRowValueStr += val
+                })
+            }
+
+            if (!groupRowValueStr)
+                groupRowValueStr = this.getValueFromArray(groupedColumnNames, grid, itemKey, isSelected);
+
+            return groupRowValueStr;
+        } else {
+            let groupRowValueStr = ""
+
+            groupKey.forEach(name => {
+                groupRowValueStr += name
             })
+            return groupRowValueStr;
         }
-
-        if (!groupRowValue)
-            groupRowValue = this.getValueFromArray(grid, keyValue, groupedColumnNames, isSelected);
-
-        return groupRowValue;
+        
     }
 
-    getEditorName(groupColumnNames, groupRowValue) {
-        let colField = "";
-
-        groupColumnNames.forEach(name => {
-            colField += name
+    getGroupRowKey(groupedColumnNames, groupKey) {
+        let groupRowKeyStr = ""
+        groupedColumnNames.forEach(name => {
+            groupRowKeyStr += name
         })
-        colField = colField.replace(".", "");
+        groupRowKeyStr = groupRowKeyStr.replace(".", "");
 
-        return "groupCheckBox" + colField + groupRowValue;
+        return groupRowKeyStr
+    }
+
+    getEditorName(groupedColumnNames, groupKey, grid, isSelected, itemKey) {
+        let groupRowValueStr = this.getGroupRowValue(groupedColumnNames, groupKey, grid, isSelected, itemKey),
+            groupRowKeyStr = this.getGroupRowKey(groupedColumnNames, groupKey);
+
+        return "groupCheckBox" + groupRowKeyStr + groupRowValueStr;
     }
 
     onGridSelectionChanged(args) {
