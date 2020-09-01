@@ -1,6 +1,6 @@
 $(function () {
-    let helper = null;
-    let columns = [
+    let helper = null,
+        columns = [
         {
             dataField: 'ProductID', 
             allowGrouping: false 
@@ -26,11 +26,7 @@ $(function () {
         columns: columns,
         onInitialized: function (e) {
             if (!helper) {
-                let grid = e.component;
-                
-                helper = new GroupSelectionHelper(grid, myJsonObject, "ProductID");
-                grid.on("selectionChanged", helper.onGridSelectionChanged);
-                grid.option("customizeColumns", helper.onCustomizeColumns);
+                helper = new GroupSelectionHelper(e.component, myJsonObject, "ProductID");
             }
         },
         groupPanel: {
