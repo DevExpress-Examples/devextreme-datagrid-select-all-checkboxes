@@ -75,7 +75,7 @@ class GroupSelectionHelper {
                 });
             }
         }
-        
+
         groupedColumns.sort((a, b) => (a.groupIndex > b.groupIndex) ? 1 : -1)
         groupedColumns.forEach(col => {
             colNames.push(col.dataField);
@@ -104,11 +104,10 @@ class GroupSelectionHelper {
     }
 
     checkIfKeysAreSelected(currentKeys, selectedKeys) {
-        let count = 0;
-
         if (selectedKeys.length == 0)
             return false;
 
+        let count = 0;
         for (let i = 0; i < currentKeys.length; i++) {
             let keyValue = currentKeys[i];
             if (selectedKeys.indexOf(keyValue) > -1) // key is not selected
@@ -127,9 +126,8 @@ class GroupSelectionHelper {
         let query = DevExpress.data.query(this.data),
             filterExpr = [];
 
-        for (let i = 0; i < groupValue.length; i++) {
+        for (let i = 0; i < groupValue.length; i++) 
             filterExpr.push([fieldNames[i], "=", groupValue[i]])
-        }
 
         let filteredKeys = query
             .filter(filterExpr)
@@ -146,24 +144,22 @@ class GroupSelectionHelper {
     getValueFromArray(groupedColumnNames, grid, itemKey, isSelected) {
         let that = this,
             selection = [];
-            
-        if (isSelected) {
-            selection = grid.getSelectedRowsData();
-        }
 
-        if (selection.length == 0) {
+        if (isSelected) 
+            selection = grid.getSelectedRowsData();
+    
+        if (selection.length == 0) 
             selection = this.data;
-        }
+        
 
         let data = selection.find(e => e[that.keyFieldName] === itemKey);
-
-        if (!data) {
+        if (!data) 
             return null
-        }
+        
 
         let returnVal = ""
         groupedColumnNames.forEach(field => {
-            let isFieldObject = field.indexOf('.');
+            let isFieldObject = field.indexOf('.'); // Check if field name is like "Field1.Field2.myValue"
             if (isFieldObject) {
                 let splitFields = field.split("."),
                     tempVal = data;
@@ -186,6 +182,7 @@ class GroupSelectionHelper {
     synchronizeCheckBoxes(grid, keys, groupedColumnNames, isSelected) {
         if (!keys || keys.length == 0 || !groupedColumnNames || !grid)
             return;
+
         let synchronizedCheckBoxes = [],
             currGroupColumn = [];
 
@@ -219,7 +216,7 @@ class GroupSelectionHelper {
     getGroupRowValue(groupedColumnNames, groupKey, grid, isSelected, itemKey) {
         let groupRowValueStr = ""
 
-        if(itemKey) {
+        if (itemKey && grid && isSelected !== undefined) {
             let rowIndex = grid.getRowIndexByKey(itemKey),
                 val;
 
@@ -227,7 +224,7 @@ class GroupSelectionHelper {
                 groupedColumnNames.forEach(name => {
                     val = grid.cellValue(rowIndex, name);
                     if (!val)
-                    groupRowValueStr += val
+                        groupRowValueStr += val
                 })
             }
 
@@ -241,10 +238,9 @@ class GroupSelectionHelper {
             })
             return groupRowValueStr;
         }
-        
     }
 
-    getGroupRowKey(groupedColumnNames, groupKey) {
+    getGroupRowKey(groupedColumnNames) {
         let groupRowKeyStr = ""
 
         groupedColumnNames.forEach(name => {
@@ -257,7 +253,7 @@ class GroupSelectionHelper {
 
     getEditorName(groupedColumnNames, groupKey, grid, isSelected, itemKey) {
         let groupRowValueStr = this.getGroupRowValue(groupedColumnNames, groupKey, grid, isSelected, itemKey),
-            groupRowKeyStr = this.getGroupRowKey(groupedColumnNames, groupKey);
+            groupRowKeyStr = this.getGroupRowKey(groupedColumnNames);
 
         return "groupCheckBox" + groupRowKeyStr + groupRowValueStr;
     }
