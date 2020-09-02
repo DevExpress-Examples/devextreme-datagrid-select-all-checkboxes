@@ -1,6 +1,21 @@
 $(function () {
-    var helper = null;
-    var myGrid = $("#grid").dxDataGrid({
+    let helper = null,
+        columns = [
+        {
+            dataField: 'ProductID', 
+            allowGrouping: false 
+        },
+        'ProductName', {
+            dataField: 'Category.CategoryName',
+            caption: 'Category',
+            groupIndex: 1
+        }, {
+            dataField: 'GroupCode',
+            groupIndex: 0
+        }
+    ]
+
+    $("#grid").dxDataGrid({
         dataSource: {
             store: {
                 type: 'array',
@@ -8,26 +23,10 @@ $(function () {
                 data: myJsonObject
             }
         },
-        columns: [
-            {
-                dataField: 'ProductID', 
-                allowGrouping: false 
-            },
-            'ProductName', {
-                dataField: 'Category.CategoryName',
-                caption: 'Category',
-                groupIndex: 1
-            }, {
-                dataField: 'GroupCode',
-                groupIndex: 0
-            }
-        ],
+        columns: columns,
         onInitialized: function (e) {
             if (!helper) {
-                var grid = e.component;
-                helper = new GroupSelectionHelper(grid, myJsonObject, "ProductID");
-                grid.on("selectionChanged", helper.onGridSelectionChanged);
-                grid.option("customizeColumns", helper.onCustomizeColumns);
+                helper = new GroupSelectionHelper(e.component, myJsonObject, "ProductID");
             }
         },
         groupPanel: {
@@ -60,5 +59,5 @@ $(function () {
         },
         width: '800px',
         height: '450px'
-    }).dxDataGrid("instance");
+    });
 });

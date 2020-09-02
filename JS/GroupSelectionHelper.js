@@ -1,154 +1,274 @@
-function GroupSelectionHelper(grid, data, keyFieldName) {
-    var self = this;
-    this.grid = grid;
-    this.data = data;
-    this.keyFieldName = keyFieldName;
-    this.customSelectionFlag = false;
-    this.onCustomizeColumns = function (columns) {
-        $.each(columns, function (_, element) {
-            element.groupCellTemplate = self.groupCellTemplate;
-        });
+class GroupSelectionHelper {
+    grid;
+    data;
+    keyFieldName;
+    groupFieldNames;
+    customSelectionFlag;
+
+    constructor(grid, data, keyFieldName, groupFieldNames) {
+        this.grid = grid;
+        this.data = data;
+        this.keyFieldName = keyFieldName;
+        this.groupFieldNames = groupFieldNames;
+        this.customSelectionFlag = false;
+
+        this.onCustomizeColumns = this.onCustomizeColumns.bind(this);
+        this.groupCellTemplate = this.groupCellTemplate.bind(this);
+        this.onGridSelectionChanged = this.onGridSelectionChanged.bind(this);
+
+        grid.on("selectionChanged", this.onGridSelectionChanged);
+        grid.option("customizeColumns", this.onCustomizeColumns);
     }
-    this.groupCellTemplate = function (groupCell, info) {
-        var colField = info.column.dataField.replace(".", "");
-        var editorID = "groupCheckBox" + colField + info.data.key;         
-        var rowKeys = self.getKeys(info.data, [], info.column.dataField);
-        var defaultValue = self.checkIfKeysAreSelected(rowKeys, self.grid.getSelectedRowKeys());
-        $('<div>').addClass("customSelectionCheckBox").attr("data-keys", JSON.stringify(rowKeys))
+
+    onCustomizeColumns(columns) {
+        columns.forEach(col => {
+            col.groupCellTemplate = this.groupCellTemplate;
+        })
+    }
+
+    groupCellTemplate(groupCell, info) {
+        let that = this,
+            groupedColumnNames = this.getGroupedColumns(that.grid),
+            groupKey = info.key,
+            currGroupColumn = [];
+
+        for (let i = 0; i <= info.key.length - 1; i++) {
+            currGroupColumn.push(groupedColumnNames[i])
+        }
+        let rowKeys = this.getKeys(info.data, [], groupedColumnNames, groupKey),
+            defaultValue = this.checkIfKeysAreSelected(rowKeys, this.grid.getSelectedRowKeys()),
+            editorID = this.getEditorName(currGroupColumn, groupKey)
+
+        $('<div>')
+            .addClass("customSelectionCheckBox")
+            .attr("data-keys", JSON.stringify(rowKeys))
             .attr('id', editorID)
             .appendTo(groupCell)
             .dxCheckBox({
                 text: info.column.caption + ': ' + info.text,
                 value: defaultValue,
                 onValueChanged: function (e) {
-                    if (self.customSelectionFlag)
+                    if (that.customSelectionFlag)
                         return;
-                    var rowKeys = e.element.data("keys");
+
+                    let rowKeys = e.element.data("keys");
+
                     if (e.value)
-                        self.grid.selectRows(rowKeys, true);
+                        that.grid.selectRows(rowKeys, true);
                     else
-                        self.grid.deselectRows(rowKeys);
+                        that.grid.deselectRows(rowKeys);
                 }
             })
-    };
-    this.getGroupedColumns = function (dataGrid) {
-        var colNames = [];
-        for (i = 0; i < dataGrid.columnCount(); i++) {
-            if (dataGrid.columnOption(i, "groupIndex") > -1) {
-                colNames.push(dataGrid.columnOption(i, "dataField"));
+    }
+
+    getGroupedColumns(dataGrid) {
+        let colNames = [],
+            groupedColumns = [],
+            groupIndex = null;
+
+        for (let i = 0; i < dataGrid.columnCount(); i++) {
+            groupIndex = dataGrid.columnOption(i, "groupIndex")
+            if (groupIndex > -1) {
+                groupedColumns.push({
+                    dataField: dataGrid.columnOption(i, "dataField"),
+                    groupIndex
+                });
             }
         }
+
+        groupedColumns.sort((a, b) => (a.groupIndex > b.groupIndex) ? 1 : -1)
+        groupedColumns.forEach(col => {
+            colNames.push(col.dataField);
+        })
         return colNames;
     }
-    this.getKeys = function (data, keys, groupedColumnName, groupKey) {
+
+    getKeys(data, keys, groupedColumnNames, groupKey) {
         if (!groupKey)
             groupKey = data.key;
-        var dataItems = data.items || data.collapsedItems || data; // check if it's a group row that has nested rows
 
-        for (var i = 0; i < dataItems.length; i++) {
-            var childItems = dataItems[i].items || dataItems[i].collapsedItems;
-            if (childItems) {
-                self.getKeys(dataItems[i], keys, groupedColumnName, groupKey);
-            } else
-                keys.push(dataItems[i][self.keyFieldName]);
+        let dataItems = data.items || data.collapsedItems || data; // check if it's a group row that has nested rows
+
+        for (let i = 0; i < dataItems.length; i++) {
+            let childItems = dataItems[i].items || dataItems[i].collapsedItems;
+            if (childItems)
+                this.getKeys(dataItems[i], keys, groupedColumnNames, groupKey);
+            else
+                keys.push(dataItems[i][this.keyFieldName]);
         }
+
         if (data.isContinuation || data.isContinuationOnNextPage)
-            self.getKeysFromDataSource(keys, groupKey, groupedColumnName);
+            this.getKeysFromDataSource(keys, groupKey, groupedColumnNames);
 
         return keys;
     }
-    this.checkIfKeysAreSelected = function (currentKeys, selectedKeys) {
-        var count = 0;
+
+    checkIfKeysAreSelected(currentKeys, selectedKeys) {
         if (selectedKeys.length == 0)
             return false;
-        for (var i = 0; i < currentKeys.length; i++) {
-            var keyValue = currentKeys[i];
+
+        let count = 0;
+        for (let i = 0; i < currentKeys.length; i++) {
+            let keyValue = currentKeys[i];
             if (selectedKeys.indexOf(keyValue) > -1) // key is not selected
                 count++;
         }
+
         if (count == 0)
             return false;
-        if (currentKeys.length == count)
+        else if (currentKeys.length == count)
             return true;
         else
             return undefined;
     }
-    this.getKeysFromDataSource = function (keys, groupValue, fieldName) {
-        var colFields = fieldName.split(".");
-        var filteredKeys = $.grep(self.data, function (el) {
-            var result = el;
-            for (var index = 0; index < colFields.length; index++) {
-                var field = colFields[index];
-                result = result[field];
-                if (!$.isPlainObject(result))
-                    break;
-            }
-            return result == groupValue;
-        });
-        for (var i = 0; i < filteredKeys.length; i++) {
-            var value = filteredKeys[i][self.keyFieldName];
+
+    getKeysFromDataSource(keys, groupValue, fieldNames) {
+        let query = DevExpress.data.query(this.data),
+            filterExpr = [];
+
+        for (let i = 0; i < groupValue.length; i++) 
+            filterExpr.push([fieldNames[i], "=", groupValue[i]])
+
+        let filteredKeys = query
+            .filter(filterExpr)
+            .toArray();
+
+        for (let i = 0; i < filteredKeys.length; i++) {
+            let value = filteredKeys[i][this.keyFieldName];
             if (value && keys.indexOf(value) == -1) // invisible key
                 keys.push(value);
         }
-    }
-    this.getValueFromArray = function (grid, keyValue, dataField) {
-        var selection = grid.getSelectedRowsData();
-        if (selection.length == 0)
-            selection = self.data;
-        var result = $.grep(selection, function (el) { return el[self.keyFieldName] == keyValue })[0];
-        if (!result)
-            return null;
-        var colFields = dataField.split(".");
-        for (var index = 0; index < colFields.length; index++) {
-            var field = colFields[index];
-            result = result[field];
-            if (!$.isPlainObject(result))
-                break;
-        }
-        return result;
+
     }
 
-    this.synchronizeCheckBoxes = function (grid, keys, groupedColumnNames, isSelected) {
+    getValueFromArray(groupedColumnNames, grid, itemKey, isSelected) {
+        let that = this,
+            selection = [];
+
+        if (isSelected) 
+            selection = grid.getSelectedRowsData();
+    
+        if (selection.length == 0) 
+            selection = this.data;
+        
+
+        let data = selection.find(e => e[that.keyFieldName] === itemKey);
+        if (!data) 
+            return null
+        
+
+        let returnVal = ""
+        groupedColumnNames.forEach(field => {
+            let isFieldObject = field.indexOf('.'); // Check if field name is like "Field1.Field2.myValue"
+            if (isFieldObject) {
+                let splitFields = field.split("."),
+                    tempVal = data;
+                for (let i = 0; i < splitFields.length; i++) {
+                    tempVal = tempVal[splitFields[i]];
+                    if (!(tempVal instanceof Object)) {
+                        break;
+                    }
+                }
+                returnVal += tempVal;
+            } else {
+                returnVal += data[field]
+            }
+        })
+        return returnVal
+
+
+    }
+
+    synchronizeCheckBoxes(grid, keys, groupedColumnNames, isSelected) {
         if (!keys || keys.length == 0 || !groupedColumnNames || !grid)
             return;
-        var synchronizedCheckBoxes = [];
-        for (var j = 0; j < groupedColumnNames.length; j++) {
-            for (var i = 0; i < keys.length; i++) {
-                var keyValue = keys[i];
-                var rowIndex = grid.getRowIndexByKey(keyValue);
-                var columnField = groupedColumnNames[j];
-                var groupRowValue = grid.cellValue(rowIndex, columnField);
-                if (!groupRowValue)
-                    groupRowValue = self.getValueFromArray(grid, keyValue, columnField);
-                if (groupRowValue == null)
-                    continue;
-                columnField = columnField.replace(".", "");
-                var editorName = "groupCheckBox" + columnField + groupRowValue;
+
+        let synchronizedCheckBoxes = [],
+            currGroupColumn = [];
+
+        for (let j = 0; j < groupedColumnNames.length; j++) {
+            currGroupColumn.push(groupedColumnNames[j])
+
+            for (let i = 0; i < keys.length; i++) {
+                let currItemKey = keys[i],
+                    editorName = this.getEditorName(currGroupColumn, [], grid, isSelected, currItemKey)
+
                 if (synchronizedCheckBoxes.indexOf(editorName) > -1) // this editor was checked
                     continue;
+
                 synchronizedCheckBoxes.push(editorName);
-                var checkBoxEl = $("#" + editorName);
-                var value = isSelected;
-                var rowKeys = $(checkBoxEl).data("keys");
+
+                let checkBoxEl = $("#" + editorName),
+                    value = isSelected,
+                    rowKeys = $(checkBoxEl).data("keys");
+
                 if (value && rowKeys)
-                    value = self.checkIfKeysAreSelected(rowKeys, keys);
-                var editor = $(checkBoxEl).dxCheckBox("instance");
+                    value = this.checkIfKeysAreSelected(rowKeys, keys);
+
+                let editor = $(checkBoxEl).dxCheckBox("instance");
+
                 if (editor)
                     editor.option("value", value);
             }
-
         }
     }
-    this.onGridSelectionChanged = function (args) {
-        var keys = args.selectedRowKeys;
-        var grid = args.component;
-        var groupedColumnNames = self.getGroupedColumns(grid);
+
+    getGroupRowValue(groupedColumnNames, groupKey, grid, isSelected, itemKey) {
+        let groupRowValueStr = ""
+
+        if (itemKey && grid && isSelected !== undefined) {
+            let rowIndex = grid.getRowIndexByKey(itemKey),
+                val;
+
+            if (rowIndex !== -1) {
+                groupedColumnNames.forEach(name => {
+                    val = grid.cellValue(rowIndex, name);
+                    if (!val)
+                        groupRowValueStr += val
+                })
+            }
+
+            if (!groupRowValueStr)
+                groupRowValueStr = this.getValueFromArray(groupedColumnNames, grid, itemKey, isSelected);
+
+            return groupRowValueStr;
+        } else {
+            groupKey.forEach(name => {
+                groupRowValueStr += name
+            })
+            return groupRowValueStr;
+        }
+    }
+
+    getGroupRowKey(groupedColumnNames) {
+        let groupRowKeyStr = ""
+
+        groupedColumnNames.forEach(name => {
+            groupRowKeyStr += name
+        })
+        groupRowKeyStr = groupRowKeyStr.replace(".", "");
+
+        return groupRowKeyStr;
+    }
+
+    getEditorName(groupedColumnNames, groupKey, grid, isSelected, itemKey) {
+        let groupRowValueStr = this.getGroupRowValue(groupedColumnNames, groupKey, grid, isSelected, itemKey),
+            groupRowKeyStr = this.getGroupRowKey(groupedColumnNames);
+
+        return "groupCheckBox" + groupRowKeyStr + groupRowValueStr;
+    }
+
+    onGridSelectionChanged(args) {
+        let keys = args.selectedRowKeys,
+            grid = args.component,
+            groupedColumnNames = this.getGroupedColumns(grid);
+
         if (groupedColumnNames.length == 0)
             return;
-        self.customSelectionFlag = true;
-        self.synchronizeCheckBoxes(grid, args.currentDeselectedRowKeys, groupedColumnNames, false);
-        self.synchronizeCheckBoxes(grid, args.selectedRowKeys, groupedColumnNames, true);
-        self.customSelectionFlag = false;
 
+        this.customSelectionFlag = true;
+        this.synchronizeCheckBoxes(grid, args.currentDeselectedRowKeys, groupedColumnNames, false);
+        this.synchronizeCheckBoxes(grid, keys, groupedColumnNames, true);
+        this.customSelectionFlag = false;
     }
 }
