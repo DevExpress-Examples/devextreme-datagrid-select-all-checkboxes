@@ -1,0 +1,54 @@
+@using DevExtremeAspNetCoreApp1.Models
+
+
+@(Html.DevExtreme().DataGrid()
+    .DataSource(new JS("dataSource"))
+    .Columns(col => {
+        col.Add().DataField("ProductID").AllowGrouping(false);
+        col.Add().DataField("ProductName");
+        col.Add()
+            .DataField("Category.CategoryName")
+            .Caption("Category")
+            .GroupIndex(1);
+        col.Add()
+            .DataField("GroupCode")
+            .GroupIndex(0);
+    })
+    .GroupPanel(g => g.Visible(true))
+    .RemoteOperations(false)
+    .SearchPanel(s => s
+        .Visible(true)
+        .Width(240)
+        .Placeholder("Search...")
+        .HighlightSearchText(true))
+    .HeaderFilter(h => h.Visible(true))
+    .RowAlternationEnabled(true)
+    .Paging(p => p.PageSize(8))
+    .Pager(p => p.Visible(true))
+    .Selection(s => s
+        .Mode(SelectionMode.Multiple)
+        .AllowSelectAll(true)
+        .ShowCheckBoxesMode(GridSelectionShowCheckBoxesMode.Always))
+    .Width(800)
+    .Height(450)
+    .OnInitialized("onInitialized")
+)
+
+<script src="~/js/data.js"></script>
+<script src="~/js/GroupSelectionHelper.js"></script>
+<script>
+    let helper = null,
+     dataSource = {
+        store: {
+            type: 'array',
+            key: "ProductID",
+            data: myJsonObject
+        }
+    }
+
+    function onInitialized(e) {
+        if (!helper) {
+            helper = new GroupSelectionHelper(e.component, myJsonObject, "ProductID");
+        }
+    }
+</script>
