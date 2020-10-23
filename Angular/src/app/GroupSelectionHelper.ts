@@ -2,14 +2,12 @@ export default class GroupSelectionHelper {
     grid;
     data;
     keyFieldName;
-    groupFieldNames;
     customSelectionFlag;
 
-    constructor(grid, data, keyFieldName, groupFieldNames) {
+    constructor(grid, data, keyFieldName) {
         this.grid = grid;
         this.data = data;
         this.keyFieldName = keyFieldName;
-        this.groupFieldNames = groupFieldNames;
         this.customSelectionFlag = false;
 
         this.onCustomizeColumns = this.onCustomizeColumns.bind(this);
