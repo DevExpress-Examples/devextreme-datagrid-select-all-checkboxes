@@ -1,4 +1,5 @@
 import Query from "devextreme/data/query";
+import CheckBox from "devextreme/ui/check_box";
 export default class GroupSelectionHelper {
     grid;
     data;
@@ -38,26 +39,53 @@ export default class GroupSelectionHelper {
             defaultValue = this.checkIfKeysAreSelected(rowKeys, this.grid.getSelectedRowKeys()),
             editorID = this.getEditorName(currGroupColumn, groupKey, null, null, null)
 
-        $('<div>')
-            .addClass("customSelectionCheckBox")
-            .attr("data-keys", JSON.stringify(rowKeys))
-            .attr('id', editorID)
-            .appendTo(groupCell)
-            .dxCheckBox({
-                text: info.column.caption + ': ' + info.text,
-                value: defaultValue,
-                onValueChanged: function (e) {
-                    if (that.customSelectionFlag)
-                        return;
+        // TODO: Change to native JavaScript
+        // $('<div>')
+        //     .addClass("customSelectionCheckBox")
+        //     .attr("data-keys", JSON.stringify(rowKeys))
+        //     .attr('id', editorID)
+        //     .appendTo(groupCell)
+        //     .dxCheckBox({
+        //         text: info.column.caption + ': ' + info.text,
+        //         value: defaultValue,
+        //         onValueChanged: function (e) {
+        //             if (that.customSelectionFlag)
+        //                 return;
 
-                    let rowKeys = e.element.data("keys");
+        //             let rowKeys = e.element.data("keys");
 
-                    if (e.value)
-                        that.grid.selectRows(rowKeys, true);
-                    else
-                        that.grid.deselectRows(rowKeys);
+        //             if (e.value)
+        //                 that.grid.selectRows(rowKeys, true);
+        //             else
+        //                 that.grid.deselectRows(rowKeys);
+        //         }
+        //     })
+
+        let checkBoxEl = document.createElement('div');
+        checkBoxEl.className = "customSelectionCheckBox";
+        checkBoxEl.dataset.keys = JSON.stringify(rowKeys);
+        checkBoxEl.id = editorID;
+        groupCell.appendChild(checkBoxEl)
+        
+
+        new CheckBox(checkBoxEl, {
+            text: info.column.caption + ': ' + info.text,
+            value: defaultValue,
+            onValueChanged: function (e) {
+                if (that.customSelectionFlag)
+                    return;
+
+                let rowKeys = JSON.parse(e.element.dataset.keys);
+
+                // BLOCKS FOR TESTING
+                if (e.value) {
+                    debugger;
+                    that.grid.selectRows(rowKeys, true);
                 }
-            })
+                else
+                    that.grid.deselectRows(rowKeys);
+            }
+        })
     }
 
     getGroupedColumns(dataGrid) {
@@ -197,14 +225,22 @@ export default class GroupSelectionHelper {
 
                 synchronizedCheckBoxes.push(editorName);
 
-                let checkBoxEl = $("#" + editorName),
-                    value = isSelected,
-                    rowKeys = $(checkBoxEl).data("keys");
+                // TODO: Change to native JavaScript
+                // let checkBoxEl = $("#" + editorName),
+                //     value = isSelected,
+                //     // TODO: Change to native JavaScript
+                //     rowKeys = $(checkBoxEl).data("keys");
 
+                let checkBoxEl = document.querySelector("#" + editorName),
+                    value = isSelected,
+                    rowKeys = JSON.parse(checkBoxEl.dataset.keys);
+                    
                 if (value && rowKeys)
                     value = this.checkIfKeysAreSelected(rowKeys, keys);
 
-                let editor = $(checkBoxEl).dxCheckBox("instance");
+                // TODO: Change to native JavaScript
+                // let editor = $(checkBoxEl).dxCheckBox("instance");
+                let editor = CheckBox.getInstance(checkBoxEl);
 
                 if (editor)
                     editor.option("value", value);
