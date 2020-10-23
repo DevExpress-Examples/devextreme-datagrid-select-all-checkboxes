@@ -1,3 +1,4 @@
+import Query from "devextreme/data/query";
 export default class GroupSelectionHelper {
     grid;
     data;
@@ -35,7 +36,7 @@ export default class GroupSelectionHelper {
         }
         let rowKeys = this.getKeys(info.data, [], groupedColumnNames, groupKey),
             defaultValue = this.checkIfKeysAreSelected(rowKeys, this.grid.getSelectedRowKeys()),
-            editorID = this.getEditorName(currGroupColumn, groupKey)
+            editorID = this.getEditorName(currGroupColumn, groupKey, null, null, null)
 
         $('<div>')
             .addClass("customSelectionCheckBox")
@@ -121,7 +122,7 @@ export default class GroupSelectionHelper {
     }
 
     getKeysFromDataSource(keys, groupValue, fieldNames) {
-        let query = DevExpress.data.query(this.data),
+        let query = Query(this.data),
             filterExpr = [];
 
         for (let i = 0; i < groupValue.length; i++) 
