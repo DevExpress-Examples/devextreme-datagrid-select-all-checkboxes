@@ -1,4 +1,6 @@
-﻿class GroupSelectionHelper {
+import Query from "devextreme/data/query";
+import CheckBox from "devextreme/ui/check_box";
+export default class GroupSelectionHelper {
     grid;
     data;
     keyFieldName;
@@ -35,28 +37,29 @@
         }
         let rowKeys = this.getKeys(info.data, [], groupedColumnNames, groupKey),
             defaultValue = this.checkIfKeysAreSelected(rowKeys, this.grid.getSelectedRowKeys()),
-            editorID = this.getEditorName(currGroupColumn, groupKey)
+            editorID = this.getEditorName(currGroupColumn, groupKey, null, null, null)
 
-        $('<div>')
-            .addClass("customSelectionCheckBox")
-            .attr("data-keys", JSON.stringify(rowKeys))
-            .attr('id', editorID)
-            .appendTo(groupCell)
-            .dxCheckBox({
-                text: info.column.caption + ': ' + info.text,
-                value: defaultValue,
-                onValueChanged: function (e) {
-                    if (that.customSelectionFlag)
-                        return;
+        let checkBoxEl = document.createElement('div');
+        checkBoxEl.className = "customSelectionCheckBox";
+        checkBoxEl.dataset.keys = JSON.stringify(rowKeys);
+        checkBoxEl.id = editorID;
+        groupCell.appendChild(checkBoxEl)
+        
+        new CheckBox(checkBoxEl, {
+            text: info.column.caption + ': ' + info.text,
+            value: defaultValue,
+            onValueChanged: function (e) {
+                if (that.customSelectionFlag)
+                    return;
 
-                    let rowKeys = e.element.data("keys");
+                let rowKeys = JSON.parse(e.element.dataset.keys);
 
-                    if (e.value)
-                        that.grid.selectRows(rowKeys, true);
-                    else
-                        that.grid.deselectRows(rowKeys);
-                }
-            })
+                if (e.value) 
+                    that.grid.selectRows(rowKeys, true);
+                else
+                    that.grid.deselectRows(rowKeys);
+            }
+        })
     }
 
     getGroupedColumns(dataGrid) {
@@ -121,10 +124,10 @@
     }
 
     getKeysFromDataSource(keys, groupValue, fieldNames) {
-        let query = DevExpress.data.query(this.data),
+        let query = Query(this.data),
             filterExpr = [];
 
-        for (let i = 0; i < groupValue.length; i++)
+        for (let i = 0; i < groupValue.length; i++) 
             filterExpr.push([fieldNames[i], "=", groupValue[i]])
 
         let filteredKeys = query
@@ -143,18 +146,16 @@
         let that = this,
             selection = [];
 
-        if (isSelected)
+        if (isSelected) 
             selection = grid.getSelectedRowsData();
-
-        if (selection.length == 0)
+    
+        if (selection.length == 0) 
             selection = this.data;
-
-
+        
         let data = selection.find(e => e[that.keyFieldName] === itemKey);
-        if (!data)
+        if (!data) 
             return null
-
-
+        
         let returnVal = ""
         groupedColumnNames.forEach(field => {
             let isFieldObject = field.indexOf('.'); // Check if field name is like "Field1.Field2.myValue"
@@ -173,8 +174,6 @@
             }
         })
         return returnVal
-
-
     }
 
     synchronizeCheckBoxes(grid, keys, groupedColumnNames, isSelected) {
@@ -196,14 +195,18 @@
 
                 synchronizedCheckBoxes.push(editorName);
 
-                let checkBoxEl = $("#" + editorName),
-                    value = isSelected,
-                    rowKeys = $(checkBoxEl).data("keys");
+                let checkBoxEl: any = document.querySelector("#" + editorName),
+                    value = isSelected;
+                    
+                if(!checkBoxEl) 
+                    continue;
+
+                let rowKeys = JSON.parse(checkBoxEl.dataset.keys);
 
                 if (value && rowKeys)
                     value = this.checkIfKeysAreSelected(rowKeys, keys);
 
-                let editor = $(checkBoxEl).dxCheckBox("instance");
+                let editor = CheckBox.getInstance(checkBoxEl);
 
                 if (editor)
                     editor.option("value", value);
