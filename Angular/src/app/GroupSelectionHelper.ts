@@ -17,7 +17,7 @@ export default class GroupSelectionHelper {
         this.getCheckBoxElementAttr = this.getCheckBoxElementAttr.bind(this);
         this.getCheckBoxValue = this.getCheckBoxValue.bind(this);
         this.checkBoxValueChanged = this.checkBoxValueChanged.bind(this);
-        this.groupCellTemplate = 'groupCellTemplate';
+        this.groupCellTemplate = 'groupSelectionCellTemplate';
         this.onGridSelectionChanged = this.onGridSelectionChanged.bind(this);
 
         grid.on("selectionChanged", this.onGridSelectionChanged);

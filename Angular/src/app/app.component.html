@@ -24,7 +24,7 @@
   <dxi-column dataField="ProductName"></dxi-column>
   <dxi-column dataField="Category.CategoryName" caption="Category" [groupIndex]="1"></dxi-column>
   <dxi-column dataField="GroupCode" [groupIndex]="0"></dxi-column>
-  <div *dxTemplate="let info of 'groupCellTemplate'; ">
+  <div *dxTemplate="let info of 'groupSelectionCellTemplate'; ">
     <dx-check-box
       [text]="helper.getCheckBoxText(info)"
       [value]="helper.getCheckBoxValue(info)"
