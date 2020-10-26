@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Service } from './app.service';
 import GroupSelectionHelper from './GroupSelectionHelper'
+import { DxDataGridComponent } from 'devextreme-angular';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +12,7 @@ import GroupSelectionHelper from './GroupSelectionHelper'
 export class AppComponent {
   dataSource: object;
   helper: GroupSelectionHelper;
-    myJsonObject: Array<any>;
+  myJsonObject: Array<any>;
 
   constructor(service: Service) {
     this.myJsonObject = service.getData();

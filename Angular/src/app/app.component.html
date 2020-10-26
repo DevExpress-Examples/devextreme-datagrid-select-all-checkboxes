@@ -24,5 +24,12 @@
   <dxi-column dataField="ProductName"></dxi-column>
   <dxi-column dataField="Category.CategoryName" caption="Category" [groupIndex]="1"></dxi-column>
   <dxi-column dataField="GroupCode" [groupIndex]="0"></dxi-column>
-
+  <div *dxTemplate="let info of 'groupCellTemplate'; ">
+    <dx-check-box
+      [text]="helper.getCheckBoxText(info)"
+      [value]="helper.getCheckBoxValue(info)"
+      [elementAttr]="helper.getCheckBoxElementAttr(info)"
+      (onValueChanged)="helper.checkBoxValueChanged($event)">
+    </dx-check-box>
+  </div>
 </dx-data-grid>
