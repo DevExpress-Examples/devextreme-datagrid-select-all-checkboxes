@@ -39,35 +39,12 @@ export default class GroupSelectionHelper {
             defaultValue = this.checkIfKeysAreSelected(rowKeys, this.grid.getSelectedRowKeys()),
             editorID = this.getEditorName(currGroupColumn, groupKey, null, null, null)
 
-        // TODO: Change to native JavaScript
-        // $('<div>')
-        //     .addClass("customSelectionCheckBox")
-        //     .attr("data-keys", JSON.stringify(rowKeys))
-        //     .attr('id', editorID)
-        //     .appendTo(groupCell)
-        //     .dxCheckBox({
-        //         text: info.column.caption + ': ' + info.text,
-        //         value: defaultValue,
-        //         onValueChanged: function (e) {
-        //             if (that.customSelectionFlag)
-        //                 return;
-
-        //             let rowKeys = e.element.data("keys");
-
-        //             if (e.value)
-        //                 that.grid.selectRows(rowKeys, true);
-        //             else
-        //                 that.grid.deselectRows(rowKeys);
-        //         }
-        //     })
-
         let checkBoxEl = document.createElement('div');
         checkBoxEl.className = "customSelectionCheckBox";
         checkBoxEl.dataset.keys = JSON.stringify(rowKeys);
         checkBoxEl.id = editorID;
         groupCell.appendChild(checkBoxEl)
         
-
         new CheckBox(checkBoxEl, {
             text: info.column.caption + ': ' + info.text,
             value: defaultValue,
@@ -77,11 +54,8 @@ export default class GroupSelectionHelper {
 
                 let rowKeys = JSON.parse(e.element.dataset.keys);
 
-                // BLOCKS FOR TESTING
-                if (e.value) {
-                    debugger;
+                if (e.value) 
                     that.grid.selectRows(rowKeys, true);
-                }
                 else
                     that.grid.deselectRows(rowKeys);
             }
@@ -178,12 +152,10 @@ export default class GroupSelectionHelper {
         if (selection.length == 0) 
             selection = this.data;
         
-
         let data = selection.find(e => e[that.keyFieldName] === itemKey);
         if (!data) 
             return null
         
-
         let returnVal = ""
         groupedColumnNames.forEach(field => {
             let isFieldObject = field.indexOf('.'); // Check if field name is like "Field1.Field2.myValue"
@@ -202,8 +174,6 @@ export default class GroupSelectionHelper {
             }
         })
         return returnVal
-
-
     }
 
     synchronizeCheckBoxes(grid, keys, groupedColumnNames, isSelected) {
@@ -225,21 +195,17 @@ export default class GroupSelectionHelper {
 
                 synchronizedCheckBoxes.push(editorName);
 
-                // TODO: Change to native JavaScript
-                // let checkBoxEl = $("#" + editorName),
-                //     value = isSelected,
-                //     // TODO: Change to native JavaScript
-                //     rowKeys = $(checkBoxEl).data("keys");
-
-                let checkBoxEl = document.querySelector("#" + editorName),
-                    value = isSelected,
-                    rowKeys = JSON.parse(checkBoxEl.dataset.keys);
+                let checkBoxEl: any = document.querySelector("#" + editorName),
+                    value = isSelected;
                     
+                if(!checkBoxEl) 
+                    continue;
+
+                let rowKeys = JSON.parse(checkBoxEl.dataset.keys);
+
                 if (value && rowKeys)
                     value = this.checkIfKeysAreSelected(rowKeys, keys);
 
-                // TODO: Change to native JavaScript
-                // let editor = $(checkBoxEl).dxCheckBox("instance");
                 let editor = CheckBox.getInstance(checkBoxEl);
 
                 if (editor)
