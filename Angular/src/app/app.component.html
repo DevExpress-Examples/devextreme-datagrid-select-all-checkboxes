@@ -1,0 +1,35 @@
+<dx-data-grid 
+  [dataSource]="dataSource"
+  (onInitialized)="onInitialized($event)"
+  [remoteOperations]="true"
+  [rowAlternationEnabled]="true"
+  [width]="800"
+  [height]="450">
+  <dxo-group-panel [visible]="true"></dxo-group-panel>
+  <dxo-search-panel 
+    [visible]="true"
+    [width]="240"
+    placeholder="Search..."
+    highlightSearchText="true"></dxo-search-panel>
+  <dxo-header-filter [visible]="true"></dxo-header-filter>
+  <dxo-paging [pageSize]="8"></dxo-paging>
+  <dxo-pager [visible]="true"></dxo-pager>
+  <dxo-selection 
+    mode="multiple"
+    [allowSelectAll]="true"
+    showCheckBoxesMode="always"></dxo-selection>
+  <dxo-sorting mode="multiple"></dxo-sorting>
+
+  <dxi-column dataField="ProductID" [allowGrouping]="false"></dxi-column>
+  <dxi-column dataField="ProductName"></dxi-column>
+  <dxi-column dataField="Category.CategoryName" caption="Category" [groupIndex]="1"></dxi-column>
+  <dxi-column dataField="GroupCode" [groupIndex]="0"></dxi-column>
+  <div *dxTemplate="let info of 'groupSelectionCellTemplate'; ">
+    <dx-check-box
+      [text]="helper.getCheckBoxText(info)"
+      [value]="helper.getCheckBoxValue(info)"
+      [elementAttr]="helper.getCheckBoxElementAttr(info)"
+      (onValueChanged)="helper.checkBoxValueChanged($event)">
+    </dx-check-box>
+  </div>
+</dx-data-grid>
