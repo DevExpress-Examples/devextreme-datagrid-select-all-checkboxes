@@ -35,7 +35,7 @@ class GroupSelectionHelper {
         }
         let rowKeys = this.getKeys(info.data, [], groupedColumnNames, groupKey),
             defaultValue = this.checkIfKeysAreSelected(rowKeys, this.grid.getSelectedRowKeys()),
-            editorID = this.getEditorName(currGroupColumn, groupKey)
+            editorID = this.getEditorName(currGroupColumn, groupKey, info.component);
 
         $('<div>')
             .addClass("customSelectionCheckBox")
@@ -252,8 +252,8 @@ class GroupSelectionHelper {
     getEditorName(groupedColumnNames, groupKey, grid, isSelected, itemKey) {
         let groupRowValueStr = this.getGroupRowValue(groupedColumnNames, groupKey, grid, isSelected, itemKey),
             groupRowKeyStr = this.getGroupRowKey(groupedColumnNames);
-
-        return "groupCheckBox" + groupRowKeyStr + groupRowValueStr;
+        const gridId = grid.element().attr("id");
+        return gridId + "groupCheckBox" + groupRowKeyStr + groupRowValueStr;
     }
 
     onGridSelectionChanged(args) {
