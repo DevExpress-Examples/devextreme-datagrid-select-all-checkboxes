@@ -221,7 +221,7 @@
             if (rowIndex !== -1) {
                 groupedColumnNames.forEach(name => {
                     val = grid.cellValue(rowIndex, name);
-                    if (!val)
+                    if (val)
                         groupRowValueStr += val
                 })
             }
