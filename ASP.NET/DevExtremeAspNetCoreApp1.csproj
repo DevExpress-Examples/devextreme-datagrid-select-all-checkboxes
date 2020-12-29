@@ -7,5 +7,5 @@
     <PackageReference Include="DevExtreme.AspNet.Core" Version="20.1.7" />
     <PackageReference Include="BuildBundlerMinifier" Version="2.9.406" />
     </ItemGroup>
-    <ProjectExtensions><VisualStudio><UserProperties TemplateFeatures="NETCORE" /></VisualStudio></ProjectExtensions>
+    <ProjectExtensions><VisualStudio><UserProperties DismissedDevExtremeVersion="20.2.3" TemplateFeatures="NETCORE" /></VisualStudio></ProjectExtensions>
 </Project>

@@ -53,7 +53,7 @@ export default class GroupSelectionHelper {
           currGroupColumn.push(groupedColumnNames[i])
         }
     
-        const editorID = this.getEditorName(currGroupColumn, groupKey, null, null, null)
+        const editorID = this.getEditorName(currGroupColumn, groupKey, info.component, null, null)
     
         return {
           class: "customSelectionCheckBox",
@@ -267,8 +267,8 @@ export default class GroupSelectionHelper {
     getEditorName(groupedColumnNames, groupKey, grid, isSelected, itemKey) {
         let groupRowValueStr = this.getGroupRowValue(groupedColumnNames, groupKey, grid, isSelected, itemKey),
             groupRowKeyStr = this.getGroupRowKey(groupedColumnNames);
-
-        return "groupCheckBox" + groupRowKeyStr + groupRowValueStr;
+        const gridId = grid.element().id;
+        return gridId + "groupCheckBox" + groupRowKeyStr + groupRowValueStr;
     }
 
     onGridSelectionChanged(args) {
