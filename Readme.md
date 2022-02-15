@@ -6,7 +6,7 @@
 
 # DataGrid for DevExtreme - How to implement a three-state "Select All" CheckBox in a group row 
 
-This example demonstrates how to implement a custom "Select All" CheckBox in a group row to select all rows in this group. This CheckBox can have three states: unchecked, checked and undetermined (when only several of the group members are checked). 
+This example demonstrates how to implement a custom "Select All" CheckBox in a group row to select all rows in this group. This CheckBox can have three states: unchecked, checked, or undetermined (when only several of the group members are checked). 
 
 This solution is designed to work with in-memory data.
 
