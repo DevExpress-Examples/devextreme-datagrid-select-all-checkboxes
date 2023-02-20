@@ -9,7 +9,7 @@
 <!-- default file list end -->
 # dxDataGrid - How to implement a three-state "Select All" check box for in a group row 
 <!-- run online -->
-**[[Run Online]](https://codecentral.devexpress.com/t444368/)**
+**[[Run Online]](https://codecentral.devexpress.com/128583254/)**
 <!-- run online end -->
 
 
