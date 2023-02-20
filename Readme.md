@@ -4,21 +4,15 @@
 [![](https://img.shields.io/badge/📖_How_to_use_DevExpress_Examples-e9f6fc?style=flat-square)](https://docs.devexpress.com/GeneralInformation/403183)
 <!-- default badges end -->
 
-# DataGrid for DevExtreme - How to implement a three-state "Select All" CheckBox in a group row 
+# DevExtreme DataGrid - How to implement a three-state "Select All" CheckBox in a group row 
 
 This example demonstrates how to implement a custom "Select All" CheckBox in a group row to select all rows in this group. This CheckBox can have three states: unchecked, checked, or undetermined (when only several of the group members are checked). 
 
 This solution is designed to work with in-memory data.
 
-![Implement a three-state "Select All" CheckBox](devextreme-datagrid-select-all-checkbox.png)
+<div align="center"><img alt="Implement a three-state "Select All" CheckBox" src="devextreme-datagrid-select-all-checkbox.png" /></div>
 
-## Implementation details
-
-Implement a GroupSelectionHelper helper class. Use the [customizeColumns](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/#customizeColumns) function to specify the [groupCellTemplate](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/columns/#groupCellTemplate) that creates a CheckBox for every group row. 
-
-The synchronizeCheckBoxes function in the helper class is called every time user makes a selection. In this example, this function helps to synchronize parent and nested group rows.
-
-## Files to Look At
+## Files to Review
 
 - **jQuery**
     - [DataGridGroupSelection.js](jQuery/DataGridGroupSelection.js)
@@ -30,6 +24,12 @@ The synchronizeCheckBoxes function in the helper class is called every time user
 - **ASP.NET**    
     - [Index.cshtml](ASP.NET/Views/Home/Index.cshtml)
     - [GroupSelectionHelper.js](ASP.NET/wwwroot/js/GroupSelectionHelper.js)
+
+## Implementation details
+
+Implement a GroupSelectionHelper helper class. Use the [customizeColumns](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/#customizeColumns) function to specify the [groupCellTemplate](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/columns/#groupCellTemplate) that creates a CheckBox for every group row. 
+
+The synchronizeCheckBoxes function in the helper class is called every time user makes a selection. In this example, this function helps to synchronize parent and nested group rows.
 
 ## Documentation
 
