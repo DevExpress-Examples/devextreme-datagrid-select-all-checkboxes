@@ -12,7 +12,7 @@ This example supports the [DataGrid.remoteOperations](https://js.devexpress.com/
 
 DataGrid may query all data when selecting a group row with many data records. You can use the **DataGrid.selection.maxFilterLengthInRequest** private option to increase this threshold but it may result in Error 400. Make sure that your server supports long URLs. Also, make sure to test **maxFilterLengthInRequest** after every DevExtreme upgrade since we may change this private API without notifications.
 
-<div align="center"><img alt="Implement a three-state "Select All" CheckBox" src="devextreme-datagrid-select-all-checkbox.png" /></div>
+![image](https://github.com/DevExpress-Examples/devextreme-datagrid-select-all-checkboxes/assets/13280527/813d1328-2a2b-4ebc-bbfe-e3291b7df6ee)
 
 ## Files to Review
 
