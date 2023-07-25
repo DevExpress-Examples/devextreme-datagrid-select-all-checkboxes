@@ -1,4 +1,9 @@
-  .customSelectionCheckBox .dx-checkbox-icon:before{
-           width: 12px !important;
-           height: 12px !important;
-        }
+.group-selection-check-box {
+  margin-right: 10px;
+}
+
+.group-row-flex {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
