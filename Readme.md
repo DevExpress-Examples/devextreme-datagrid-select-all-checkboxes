@@ -19,6 +19,10 @@ DataGrid may query all data when selecting a group row with many data records. Y
 - **jQuery**
     - [index.js](jQuery/index.js)
     - [GroupSelectionBehavior.js](jQuery/GroupSelectionBehavior.js)
+- **Angular**
+    - [GroupRowSelectionHelper.ts](Angular/src/app/GroupRowSelection/GroupRowSelectionHelper.ts)
+    - [group-row.component.html](Angular/src/app/GroupRowSelection/GroupSelectionBehavior.js)
+    - [group-row.component.ts](Angular/src/app/GroupRowSelection/group-row.component.ts)
 
 ## Implementation details
 
