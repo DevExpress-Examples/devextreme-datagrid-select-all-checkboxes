@@ -1,0 +1,7 @@
+<div class="group-row-flex">
+  <div class="group-selection-front">
+    <dx-load-indicator [height]="iconSize" [width]="iconSize" [visible]="isLoading"></dx-load-indicator>
+    <dx-check-box *ngIf="!isLoading" [iconSize]="iconSize" [value]="checked" (onValueChanged)="checkBoxValueChanged($event)"></dx-check-box>
+  </div>
+  <span>{{ groupCellData | groupText }}</span>
+</div>
