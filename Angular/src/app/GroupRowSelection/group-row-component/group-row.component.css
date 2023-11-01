@@ -1,0 +1,11 @@
+.group-selection-front {
+  margin-right: 10px;
+}
+.group-selection-front .dx-loadindicator {
+  display: block;
+}
+.group-row-flex {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
