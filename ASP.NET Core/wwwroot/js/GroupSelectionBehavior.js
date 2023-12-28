@@ -40,7 +40,7 @@ class GroupSelectionBehavior {
         }).dxLoadIndicator("instance");
         
         this.getSelectedKeys(cellData.component).then((selectedKeys) => {
-          if (this.cacheGroupRequests && this.rowKeysCache[checkBoxId]) {
+            if (this.cacheGroupRequests && this.rowKeysCache[checkBoxId]) {
             this.initCheckBox(checkBox, loadIndicator, checkBoxId, selectedKeys);
           } else {
             const groupedColumns = cellData.component.getVisibleColumns().filter(c => c.groupIndex >= 0).sort((a, b) => {
@@ -57,6 +57,7 @@ class GroupSelectionBehavior {
             store.load(loadOptions).then((data) => {
                 const keys = data.map(d => cellData.component.keyOf(d));
                 this.rowKeysCache[checkBoxId] = keys;
+                debugger
                 this.initCheckBox(checkBox, loadIndicator, checkBoxId, selectedKeys);
             });
           }

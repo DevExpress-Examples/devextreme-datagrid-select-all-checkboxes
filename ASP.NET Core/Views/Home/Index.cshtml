@@ -1,0 +1,41 @@
+@using ASP_NET_Core.Models
+
+@{
+    string url = "https://js.devexpress.com/Demos/Mvc/api/DataGridWebApi";
+}
+
+@(Html.DevExtreme().DataGrid()
+    .OnInitialized("(e) => { new GroupSelectionBehavior(e.component); }")
+    .Selection(s => s.Mode(SelectionMode.Multiple).AllowSelectAll(true).ShowCheckBoxesMode(GridSelectionShowCheckBoxesMode.Always))
+    .SelectedRowKeys(new JS("[10521]"))
+    .Height(800)
+    .Width(1200)
+    .ShowBorders(true)
+    .DataSource(d => d.RemoteController().LoadUrl(url + "/Orders").Key("OrderID"))
+    .Columns(columns => {
+        columns.Add().DataField("OrderID");
+        columns.Add().DataField("CustomerID").Caption("Customer")
+            .Lookup(lk => lk
+                .ValueExpr("Value")
+                .DisplayExpr("Text")
+                .DataSource(d => d.RemoteController()
+                    .LoadUrl(url + "/CustomersLookup")
+                    .Key("Value"))
+        );
+        columns.Add().DataField("OrderDate").DataType(GridColumnDataType.Date);
+        columns.Add().DataField("Freight");
+        columns.Add().DataField("ShipCountry").GroupIndex(0);
+        columns.Add().DataField("ShipCity").GroupIndex(2);
+        columns.Add().DataField("ShipVia").GroupIndex(1)
+            .Lookup(lk => lk
+                .ValueExpr("Value")
+                .DisplayExpr("Text")
+                .DataSource(d => d.RemoteController()
+                    .LoadUrl(url + "/ShippersLookup")
+                    .Key("Value"))
+        );
+    })
+    .GroupPanel(p => p.Visible(true))
+    .Grouping(g => g.AutoExpandAll(false))
+    .RemoteOperations(true)
+)
