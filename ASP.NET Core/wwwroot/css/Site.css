@@ -1,0 +1,16 @@
+.demo-container {
+    margin: 50px 50px;
+    width: 90vh;
+}
+body {
+    margin: 8px;
+}
+.group-selection-check-box {
+    margin-right: 10px;
+}
+
+.group-row-flex {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
