@@ -68,13 +68,17 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({ groupCellData,
   useEffect(() => {
     // console.log(this);
     // console.log("default:", checked, childRowKeys);
-    onInitialized({key: groupCellData.row.key, setCheckedState: setCheckedState.bind(this)});
+    const arr = onInitialized({key: groupCellData.row.key, setCheckedState: setCheckedState.bind(this)});
+    (arr as unknown as Promise<any>).then((children:any) => {
+      console.log("Promise",children);
+      setChildKeys(children);
+    });
     // getChildRowKeys(group.component, group.row.key)
     // console.log(helper.getChildRowKeys(groupCellData.component, groupCellData.row.key));
-    setChildKeys(helper.getChildRowKeys(groupCellData.component, groupCellData.row.key));
-    console.log(childKeys);
+    // setChildKeys(helper.getChildRowKeys(groupCellData.component, groupCellData.row.key));
+    // console.log(childKeys);
     
-  },[setChildKeys, groupCellData, setCheckedState, childKeys]);
+  },[groupCellData, setCheckedState]);
   
   return (
     <div ref={componentRef} className="group-row-flex">

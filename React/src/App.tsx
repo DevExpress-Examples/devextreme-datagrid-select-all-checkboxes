@@ -53,7 +53,9 @@ function App(): JSX.Element {
   const groupRowInit = (arg: IGroupRowReadyParameter) => {
     // console.log("Group Row Initialized", arg);
     // console.log("groupRowInit",arg);
-    helper?.groupRowInit(arg);
+    return helper?.groupRowInit(arg);
+
+    // return helper?.getChildRowKeys(dataGrid.current?.instance!, arg.key);
     // dataGrid.current?.instance.repaint();
   };
 
@@ -106,14 +108,14 @@ const groupCellRender = (group:DataGridTypes.ColumnGroupCellTemplateData) => {
         <Column
           dataField='ShipCountry'
           groupIndex={0}
-          // groupCellRender={groupCellRender}
+          groupCellRender={groupCellRender}
           ></Column>
         <Column
           dataField='ShipVia'
           caption='Shipping Company'
           dataType='number'
           groupIndex={1}
-          // groupCellRender={groupCellRender}
+          groupCellRender={groupCellRender}
           >
           <Lookup
             dataSource={shippersData}
@@ -123,11 +125,11 @@ const groupCellRender = (group:DataGridTypes.ColumnGroupCellTemplateData) => {
         <Column
           dataField='ShipCity'
           groupIndex={2}
-          // groupCellRender={groupCellRender}
+          groupCellRender={groupCellRender}
           // groupCellTemplate="groupCellTemplate"
         ></Column>
-        <Template name="groupCellTemplate" render={groupCellRender}>
-        </Template>
+        {/* <Template name="groupCellTemplate" render={groupCellRender}>
+        </Template> */}
       </DataGrid>
     </div>
   );
