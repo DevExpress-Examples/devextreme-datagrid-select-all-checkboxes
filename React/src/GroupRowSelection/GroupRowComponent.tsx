@@ -45,7 +45,7 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({ groupCellData,
     } else {
       groupCellData.component.deselectRows(childKeys ?? []);
     }
-  }, [childKeys]);
+  }, [childKeys, groupCellData]);
 
   // const checkBoxValueChanged = useCallback((e:CheckBoxTypes.ValueChangedEvent)=>{
   //   setChecked(e.value);
@@ -63,14 +63,14 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({ groupCellData,
     setChecked(value);
     setIsLoading(false);
     // console.log("setCheckedState", groupCellData,checked,isLoading);
-  }, []);
+  }, [setChecked, setIsLoading]);
 
   useEffect(() => {
     // console.log(this);
     // console.log("default:", checked, childRowKeys);
     const arr = onInitialized({key: groupCellData.row.key, setCheckedState: setCheckedState.bind(this)});
     (arr as unknown as Promise<any>).then((children:any) => {
-      console.log("Promise",children);
+      // console.log("Promise",children);
       setChildKeys(children);
     });
     // getChildRowKeys(group.component, group.row.key)
@@ -78,7 +78,7 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({ groupCellData,
     // setChildKeys(helper.getChildRowKeys(groupCellData.component, groupCellData.row.key));
     // console.log(childKeys);
     
-  },[groupCellData, setCheckedState]);
+  },[groupCellData, setCheckedState, setChildKeys]);
   
   return (
     <div ref={componentRef} className="group-row-flex">
