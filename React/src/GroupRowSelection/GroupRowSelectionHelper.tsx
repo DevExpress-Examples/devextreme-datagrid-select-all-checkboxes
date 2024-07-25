@@ -2,9 +2,7 @@ import dxDataGrid from 'devextreme/ui/data_grid';
 import { DataGridTypes } from 'devextreme-react/data-grid';
 import { LoadOptions } from 'devextreme/data';
 import { isItemsArray } from 'devextreme/common/data/custom-store';
-import GroupRowComponent, { IGroupRowReadyParameter } from './GroupRowComponent';
-import { resolve } from 'path';
-// import GroupRowComponent, { IGroupRowReadyParameter } from './GroupRowComponent';
+import { IGroupRowReadyParameter } from './GroupRowComponent';
 
 export default class GroupSelectionHelper {
   groupedColumns: DataGridTypes.Column[];
@@ -24,16 +22,8 @@ export default class GroupSelectionHelper {
     this.getSelectedKeysPromise.then((keys: any[]) => {
       this.selectedKeys = keys;
     }).catch(() => {});
-    // const defaultCustomizeCallback: Function | undefined = grid.option('customizeColumns');
-    // grid.option('customizeColumns', (columns: DataGridTypes.Column[]) => {
-    //   columns.forEach((column: DataGridTypes.Column) => {
-    //     column.groupCellTemplate = 'groupCellTemplate';
-    //   });
-    //   if (defaultCustomizeCallback) { defaultCustomizeCallback(columns); }
-    // });
     const defaultSelectionHandler: Function | undefined = grid.option('onSelectionChanged');
     grid.option('onSelectionChanged', (e: DataGridTypes.SelectionChangedEvent) => {
-      // console.log("onSelectionChangedTriggered");
       this.selectionChanged(e);
       if (defaultSelectionHandler) { defaultSelectionHandler(e); }
     });
@@ -44,9 +34,6 @@ export default class GroupSelectionHelper {
       }
       if (defaultOptionChangedHandler) { defaultOptionChangedHandler(e); }
     });
-
-
-
   }
 
   groupRowInit(arg: IGroupRowReadyParameter): Promise<any> {
@@ -66,12 +53,7 @@ export default class GroupSelectionHelper {
             if (isItemsArray(data)) {
               this.groupChildKeys[checkBoxId] = data.map((d) => this.grid.keyOf(d));
               this.getSelectedKeys(this.grid).then((selectedKeys) => {
-                // debugger;
                 const checkedState: boolean | undefined = this.areKeysSelected(this.groupChildKeys[checkBoxId], selectedKeys);
-    
-                // console.log("groupRowInit: isItemsArray true", checkedState);
-    
-                // arg.component.setCheckedState(checkedState);
                 arg.setCheckedState(checkedState);
               }).catch(() => {});
               resolve(this.groupChildKeys[checkBoxId]);
@@ -80,9 +62,6 @@ export default class GroupSelectionHelper {
       } else {
         this.getSelectedKeys(this.grid).then((selectedKeys) => {
           const checkedState: boolean | undefined = this.areKeysSelected(this.groupChildKeys[checkBoxId], selectedKeys);
-          // arg.component.setCheckedState(checkedState);
-          // console.log("groupRowInit: isItemsArray false", checkedState);
-          
           arg.setCheckedState(checkedState);
           resolve(this.groupChildKeys[checkBoxId]);
         }).catch(() => {});
@@ -131,13 +110,11 @@ export default class GroupSelectionHelper {
     if (selectedKeys.length == 0) { return false; }
     const intersectionCount = keysToCheck.filter((k) => selectedKeys.includes(k)).length;
     if (intersectionCount === 0) { return false; }
-    // debugger;
     if (intersectionCount === keysToCheck.length) { return true; }
     return undefined;
   }
 
   getChildRowKeys(grid: dxDataGrid, groupRowKey: string[]): any[] {
-    console.log("getChildRowKeys", {...this.groupChildKeys}, this.calcCheckBoxId(grid, groupRowKey), this.groupChildKeys[this.calcCheckBoxId(grid, groupRowKey)]);
     return this.groupChildKeys[this.calcCheckBoxId(grid, groupRowKey)];
   }
 

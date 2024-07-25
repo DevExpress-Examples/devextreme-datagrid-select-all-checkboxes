@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState,
+import { useEffect, useRef, useState,
 } from 'react';
 import './App.css';
 import 'devextreme/dist/css/dx.material.blue.light.compact.css';
@@ -8,7 +8,6 @@ import DataGrid, {
 } from 'devextreme-react/data-grid';
 import GroupSelectionHelper from './GroupRowSelection/GroupRowSelectionHelper';
 import GroupRowComponent, { IGroupRowReadyParameter } from './GroupRowSelection/GroupRowComponent';
-import { Template } from 'devextreme-react';
 
 const url = 'https://js.devexpress.com/Demos/Mvc/api/DataGridWebApi';
 const dataSource = AspNetData.createStore({
@@ -45,29 +44,15 @@ function App(): JSX.Element {
     };
   }, [dataGrid, setHelper]);
 
-  // const onInitialized = useCallback((e: DataGridTypes.InitializedEvent) => {
-  //   if(dataGrid.current)
-  //     setHelper(new GroupSelectionHelper(dataGrid.current?.instance));
-  // },[]);
-
   const groupRowInit = (arg: IGroupRowReadyParameter) => {
-    // console.log("Group Row Initialized", arg);
-    // console.log("groupRowInit",arg);
     return helper?.groupRowInit(arg);
-
-    // return helper?.getChildRowKeys(dataGrid.current?.instance!, arg.key);
-    // dataGrid.current?.instance.repaint();
   };
 
   
 const groupCellRender = (group:DataGridTypes.ColumnGroupCellTemplateData) => {
-  //get children right
-  // console.log("Children", helper?.getChildRowKeys(group.component, group.row.key));
   return(
     <GroupRowComponent
       groupCellData={group}
-      // childRowKeys={helper?.getChildRowKeys(group.component, group.row.key)}
-      helper={helper!}
       onInitialized={groupRowInit}
     ></GroupRowComponent>
   )
@@ -83,7 +68,6 @@ const groupCellRender = (group:DataGridTypes.ColumnGroupCellTemplateData) => {
         width="100%"
         height={600}
         showBorders={true}
-        // onInitialized={onInitialized}
         >
         <Selection
           deferred={true}
@@ -126,10 +110,7 @@ const groupCellRender = (group:DataGridTypes.ColumnGroupCellTemplateData) => {
           dataField='ShipCity'
           groupIndex={2}
           groupCellRender={groupCellRender}
-          // groupCellTemplate="groupCellTemplate"
         ></Column>
-        {/* <Template name="groupCellTemplate" render={groupCellRender}>
-        </Template> */}
       </DataGrid>
     </div>
   );
