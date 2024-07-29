@@ -48,17 +48,17 @@ export default class GroupSelectionHelper {
           filter,
         };
         const store = this.grid.getDataSource().store();
-        
-          store.load(loadOptions).then((data) => {
-            if (isItemsArray(data)) {
-              this.groupChildKeys[checkBoxId] = data.map((d) => this.grid.keyOf(d));
-              this.getSelectedKeys(this.grid).then((selectedKeys) => {
-                const checkedState: boolean | undefined = this.areKeysSelected(this.groupChildKeys[checkBoxId], selectedKeys);
-                arg.setCheckedState(checkedState);
-              }).catch(() => {});
-              resolve(this.groupChildKeys[checkBoxId]);
-            }
-          }).catch(() => {});
+
+        store.load(loadOptions).then((data) => {
+          if (isItemsArray(data)) {
+            this.groupChildKeys[checkBoxId] = data.map((d) => this.grid.keyOf(d));
+            this.getSelectedKeys(this.grid).then((selectedKeys) => {
+              const checkedState: boolean | undefined = this.areKeysSelected(this.groupChildKeys[checkBoxId], selectedKeys);
+              arg.setCheckedState(checkedState);
+            }).catch(() => {});
+            resolve(this.groupChildKeys[checkBoxId]);
+          }
+        }).catch(() => {});
       } else {
         this.getSelectedKeys(this.grid).then((selectedKeys) => {
           const checkedState: boolean | undefined = this.areKeysSelected(this.groupChildKeys[checkBoxId], selectedKeys);
@@ -66,7 +66,7 @@ export default class GroupSelectionHelper {
           resolve(this.groupChildKeys[checkBoxId]);
         }).catch(() => {});
       }
-    })
+    });
 
     return promise;
   }

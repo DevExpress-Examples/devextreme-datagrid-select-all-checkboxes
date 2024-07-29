@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState,
-} from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import 'devextreme/dist/css/dx.material.blue.light.compact.css';
 import * as AspNetData from 'devextreme-aspnet-data-nojquery';
@@ -37,27 +36,17 @@ function App(): JSX.Element {
   const [helper, setHelper] = useState<GroupSelectionHelper>();
 
   useEffect(() => {
-    setHelper(new GroupSelectionHelper(dataGrid.current!.instance));    
-
-    return () => {
-      console.log('Component will unmount');
-    };
+    setHelper(new GroupSelectionHelper(dataGrid.current!.instance));
   }, [dataGrid, setHelper]);
 
-  const groupRowInit = (arg: IGroupRowReadyParameter) => {
-    return helper?.groupRowInit(arg);
-  };
+  const groupRowInit = (arg: IGroupRowReadyParameter) => helper?.groupRowInit(arg);
 
-  
-const groupCellRender = (group:DataGridTypes.ColumnGroupCellTemplateData) => {
-  return(
+  const groupCellRender = (group: DataGridTypes.ColumnGroupCellTemplateData) => (
     <GroupRowComponent
       groupCellData={group}
       onInitialized={groupRowInit}
     ></GroupRowComponent>
-  )
-}
-
+  );
 
   return (
     <div className="main">
@@ -68,7 +57,7 @@ const groupCellRender = (group:DataGridTypes.ColumnGroupCellTemplateData) => {
         width="100%"
         height={600}
         showBorders={true}
-        >
+      >
         <Selection
           deferred={true}
           mode="multiple"
@@ -93,14 +82,14 @@ const groupCellRender = (group:DataGridTypes.ColumnGroupCellTemplateData) => {
           dataField='ShipCountry'
           groupIndex={0}
           groupCellRender={groupCellRender}
-          ></Column>
+        ></Column>
         <Column
           dataField='ShipVia'
           caption='Shipping Company'
           dataType='number'
           groupIndex={1}
           groupCellRender={groupCellRender}
-          >
+        >
           <Lookup
             dataSource={shippersData}
             valueExpr="Value"
