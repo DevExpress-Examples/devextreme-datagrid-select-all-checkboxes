@@ -24,6 +24,9 @@ DataGrid may query all data when selecting a group row with many data records. Y
     - [GroupRowSelectionHelper.ts](Angular/src/app/GroupRowSelection/GroupRowSelectionHelper.ts)
     - [group-row.component.html](Angular/src/app/GroupRowSelection/GroupSelectionBehavior.js)
     - [group-row.component.ts](Angular/src/app/GroupRowSelection/group-row.component.ts)
+- **React**
+    - [GroupRowComponent.tsx](React/src/GroupRowSelection/GroupRowComponent.tsx) 
+    - [GroupRowSelectionHelper.tsx](React/src/GroupRowSelection/GroupRowSelectionHelper.tsx)
 
 ## Implementation details
 
