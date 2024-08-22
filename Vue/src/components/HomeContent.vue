@@ -40,7 +40,7 @@ onMounted(() => {
   helper = new GroupSelectionHelper(dataGridRef.value!.instance)
 })
 
-function groupRowInit(arg: IGroupRowReadyParameter){
+function initGroupRow(arg: IGroupRowReadyParameter){
   helper.groupRowInit(arg);
 }
 
@@ -56,8 +56,15 @@ function groupRowInit(arg: IGroupRowReadyParameter){
       :showBorders='true'
       :selectedRowKeys='selectedRowKeys'
     >
-      <template #groupCellTemplate="data">
+      <!-- <template #groupCellTemplate="{data, key}">
+        <div>{{key}} {{ data }}</div>
         <GroupRowComponent :groupCellData="data" :childRowKey="helper.getChildRowKeys(data.component, data.key)" @onInitialized="groupRowInit"></GroupRowComponent>
+      </template> -->
+      <template #groupCellTemplate="{ data, component, key }">
+            {{ ()=>{
+              console.log(data, component, key);
+            } }}
+          <GroupRowComponent :groupCellData="data" :childRowKeys="helper.getChildRowKeys(component, data.key)" @initGroupRow="initGroupRow"></GroupRowComponent>
       </template>
       <DxSelection :deferred="false" mode="multiple"></DxSelection>
       <DxPaging :pageSize="12"></DxPaging>
@@ -73,9 +80,9 @@ function groupRowInit(arg: IGroupRowReadyParameter){
       </DxColumn>
       <DxColumn dataField="OrderDate" dataType="date"></DxColumn>
       <DxColumn dataField="Freight"></DxColumn>
-      <DxColumn dataField="ShipCountry" :groupIndex="0"></DxColumn>
-      <DxColumn dataField="ShipCity" :groupIndex="2"></DxColumn>
-      <DxColumn dataField="ShipVia" caption="Shipping Company" :groupIndex="1" dataType="number">
+      <DxColumn dataField="ShipCountry" :groupIndex="0" group-cell-template="groupCellTemplate"></DxColumn>
+      <DxColumn dataField="ShipCity" :groupIndex="2" group-cell-template="groupCellTemplate"></DxColumn>
+      <DxColumn dataField="ShipVia" caption="Shipping Company" :groupIndex="1" dataType="number" group-cell-template="groupCellTemplate">
         <DxLookup
           :dataSource='shippersData'
           valueExpr="Value"

@@ -2,20 +2,15 @@
 import DxLoadIndicator from 'devextreme-vue/load-indicator';
 import DxCheckBox, { type DxCheckBoxTypes } from 'devextreme-vue/check-box';
 import type { DxDataGridTypes } from 'devextreme-vue/data-grid';
-import { onMounted } from 'vue';
-import type { AnnotationType } from 'devextreme/common/charts';
-
-// const props = defineProps({
-//   groupCellData,
-//   childRowKeys,
-//   onInitialized
-// });
+import { onMounted, defineEmits } from 'vue';
 
 const props = defineProps<{
   groupCellData: any,
   childRowKeys: any,
-  onInitialized: any,
+  // onInitialized: EventEmitter,
 }>();
+
+const emit = defineEmits(['initGroupRow']);
 
 const iconSize = 18;
 
@@ -24,7 +19,8 @@ let checked: boolean|undefined = false;
 let childKeys: any[] = [];
 
 onMounted(() => {
-  props.onInitialized.emit({});
+  // props.onInitialized.emit('event');
+  emit("initGroupRow", [props.groupCellData.row.key, setCheckedState.bind(this)])
 });
 
 function checkBoxValueChanged(e: DxCheckBoxTypes.ValueChangedEvent) {
