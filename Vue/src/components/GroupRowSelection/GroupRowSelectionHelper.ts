@@ -1,19 +1,14 @@
 import type dxDataGrid from 'devextreme/ui/data_grid';
-import type { DxDataGridTypes } from "devextreme-vue/data-grid";
+import type { DxDataGridTypes } from 'devextreme-vue/data-grid';
 import type { LoadOptions } from 'devextreme/data';
 import { isItemsArray } from 'devextreme/common/data/custom-store';
 import type { IGroupRowReadyParameter } from '@/types';
-// import { IGroupRowReadyParameter } from './group-row-component/group-row.component';
 
 export default class GroupSelectionHelper {
   groupedColumns: DxDataGridTypes.Column[];
-
   grid: dxDataGrid;
-
   getSelectedKeysPromise: Promise<any[]> | null;
-
   selectedKeys: any[] = [];
-
   groupChildKeys: Record<string, any> = {};
 
   constructor(grid: dxDataGrid) {
@@ -24,12 +19,12 @@ export default class GroupSelectionHelper {
       this.selectedKeys = keys;
     }).catch(() => {});
     const defaultCustomizeCallback: Function | undefined = grid.option('customizeColumns');
-    // grid.option('customizeColumns', (columns: DxDataGridTypes.Column[]) => {
-    //   columns.forEach((column: DxDataGridTypes.Column) => {
-    //     column.groupCellTemplate = 'groupCellTemplate';
-    //   });
-    //   if (defaultCustomizeCallback) { defaultCustomizeCallback(columns); }
-    // });
+    grid.option('customizeColumns', (columns: DxDataGridTypes.Column[]) => {
+      columns.forEach((column: DxDataGridTypes.Column) => {
+        column.groupCellTemplate = 'groupCellTemplate';
+      });
+      if (defaultCustomizeCallback) { defaultCustomizeCallback(columns); }
+    });
     const defaultSelectionHandler: Function | undefined = grid.option('onSelectionChanged');
     grid.option('onSelectionChanged', (e: DxDataGridTypes.SelectionChangedEvent) => {
       this.selectionChanged(e);
@@ -44,32 +39,42 @@ export default class GroupSelectionHelper {
     });
   }
 
-  groupRowInit(arg: IGroupRowReadyParameter): void {
+  groupRowInit(arg: IGroupRowReadyParameter): Promise<any> {
     const checkBoxId = this.calcCheckBoxId(this.grid, arg.key);
-    if (!this.groupChildKeys[checkBoxId]) {
-      const filter: any[] = [];
-      arg.key.forEach((key, i) => {
-        filter.push([this.groupedColumns[i].dataField, '=', key]);
-      });
-      const loadOptions: LoadOptions = {
-        filter,
-      };
-      const store = this.grid.getDataSource().store();
-      store.load(loadOptions).then((data) => {
-        if (isItemsArray(data)) {
-          this.groupChildKeys[checkBoxId] = data.map((d) => this.grid.keyOf(d));
-          this.getSelectedKeys(this.grid).then((selectedKeys) => {
-            const checkedState: boolean | undefined = this.areKeysSelected(this.groupChildKeys[checkBoxId], selectedKeys);
-            arg.setCheckedState(checkedState);
-          }).catch(() => {});
-        }
-      }).catch(() => {});
-    } else {
-      this.getSelectedKeys(this.grid).then((selectedKeys) => {
-        const checkedState: boolean | undefined = this.areKeysSelected(this.groupChildKeys[checkBoxId], selectedKeys);
-        arg.setCheckedState(checkedState);
-      }).catch(() => {});
-    }
+
+    const promise = new Promise<any>((resolve) => {
+      if (!this.groupChildKeys[checkBoxId]) {
+        const filter: any[] = [];
+        arg.key.forEach((key, i) => {
+          filter.push([this.groupedColumns[i].dataField, '=', key]);
+        });
+        const loadOptions: LoadOptions = {
+          filter,
+        };
+        const store = this.grid.getDataSource().store();
+        store.load(loadOptions).then((data) => {
+          if (isItemsArray(data)) {
+            this.groupChildKeys[checkBoxId] = data.map((d) => this.grid.keyOf(d));
+            this.getSelectedKeys(this.grid).then((selectedKeys) => {
+              const checkedState: boolean | undefined = this.areKeysSelected(
+                this.groupChildKeys[checkBoxId], selectedKeys
+              );
+              arg.setCheckedState(checkedState);
+            }).catch(() => {});
+            resolve(this.groupChildKeys[checkBoxId]);
+          }
+        }).catch(() => {});
+      } else {
+        this.getSelectedKeys(this.grid).then((selectedKeys) => {
+          const checkedState: boolean | undefined = this.areKeysSelected(
+            this.groupChildKeys[checkBoxId], selectedKeys
+          );
+          arg.setCheckedState(checkedState);
+        }).catch(() => {});
+        resolve(this.groupChildKeys[checkBoxId]);
+      }
+    });
+    return promise;
   }
 
   selectionChanged(e: DxDataGridTypes.SelectionChangedEvent): void {
@@ -82,7 +87,8 @@ export default class GroupSelectionHelper {
       } else {
         e.component.repaintRows(groupRows.map((g) => g.rowIndex));
       }
-    } else if (e.selectedRowKeys.length >= e.component.totalCount() || e.currentDeselectedRowKeys.length >= e.component.totalCount()) {
+    } else if (e.selectedRowKeys.length >= e.component.totalCount()
+      || e.currentDeselectedRowKeys.length >= e.component.totalCount()) {
       e.component.repaintRows(groupRows.map((g) => g.rowIndex));
     } else {
       this.repaintGroupRowTree(e.component, groupRows);
@@ -100,7 +106,10 @@ export default class GroupSelectionHelper {
   }
 
   repaintGroupRowTree(grid: dxDataGrid, groupRows: DxDataGridTypes.Row[]): void {
-    const topGroupRow: DxDataGridTypes.Row | null = groupRows.filter((r) => r.isExpanded).reduce((acc: DxDataGridTypes.Row | null, curr) => (!acc || acc.key.length > curr.key.length ? curr : acc), null);
+    const topGroupRow: DxDataGridTypes.Row | null = groupRows.filter(
+      (r) => r.isExpanded
+    ).reduce((acc: DxDataGridTypes.Row | null, curr) =>
+      (!acc || acc.key.length > curr.key.length ? curr : acc), null);
     if (topGroupRow) {
       const affectedGroupRows = groupRows.filter((g) => g.key[0] == topGroupRow.key[0]);
       grid.repaintRows(affectedGroupRows.map((g) => g.rowIndex));
@@ -121,13 +130,17 @@ export default class GroupSelectionHelper {
 
   calcCheckBoxId(grid: dxDataGrid, groupRowKey: string[]): string {
     const gridId: string = grid.element().id;
-
-    return `${gridId}groupCheckBox${groupRowKey.join('')}`;
+    if(!groupRowKey) {
+      return `${gridId}groupCheckBox`;
+    }else{
+      return groupRowKey && `${gridId}groupCheckBox${groupRowKey.join('')}`;
+    }
   }
 
   collectGroupedColumns(grid: dxDataGrid): DxDataGridTypes.Column[] {
     const allColumns: DxDataGridTypes.Column[] = grid.getVisibleColumns();
-    return allColumns.filter((c: DxDataGridTypes.Column) => c.groupIndex != undefined && c.groupIndex >= 0)
+    return allColumns.filter(
+      (c: DxDataGridTypes.Column) => c.groupIndex != undefined && c.groupIndex >= 0)
       .sort((a, b) => {
         if (!a.groupIndex || !b.groupIndex) return 0;
         return a.groupIndex > b.groupIndex ? 1 : -1;

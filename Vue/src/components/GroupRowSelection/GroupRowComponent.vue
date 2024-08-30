@@ -1,40 +1,41 @@
 <script setup lang="ts">
 import DxLoadIndicator from 'devextreme-vue/load-indicator';
 import DxCheckBox, { type DxCheckBoxTypes } from 'devextreme-vue/check-box';
-import type { DxDataGridTypes } from 'devextreme-vue/data-grid';
-import { onMounted, defineEmits } from 'vue';
+import { onMounted, ref } from 'vue';
+import type { ColumnGroupCellTemplateData } from 'devextreme/ui/data_grid';
 
 const props = defineProps<{
-  groupCellData: any,
-  childRowKeys: any,
-  // onInitialized: EventEmitter,
+  groupCellData: ColumnGroupCellTemplateData,
+  initGroupRow: Function,
 }>();
-
-const emit = defineEmits(['initGroupRow']);
 
 const iconSize = 18;
 
-let isLoading = true;
-let checked: boolean|undefined = false;
+let bindedLoading = ref(true);
+let bindedCheck = ref(false);
 let childKeys: any[] = [];
 
 onMounted(() => {
-  // props.onInitialized.emit('event');
-  emit("initGroupRow", [props.groupCellData.row.key, setCheckedState.bind(this)])
+  props.initGroupRow({
+    key: props.groupCellData.row.key,
+    setCheckedState: setCheckedState.bind(this)
+  }).then((res:string[])=>{
+    childKeys = res;
+  });
 });
 
-function checkBoxValueChanged(e: DxCheckBoxTypes.ValueChangedEvent) {
-    checked = e.value;
-    if (e.value) { 
-      props.groupCellData.component.selectRows(props.childRowKeys ?? [], true);
-    } else {
-      props.groupCellData.component.deselectRows(props.childRowKeys ?? []);
-    }
-}
+const checkBoxValueChanged = (e: DxCheckBoxTypes.ValueChangedEvent) => {
+  bindedCheck.value = e.value;
+  if (e.value) {
+    props.groupCellData.component.selectRows(childKeys ?? [], true);
+  } else {
+    props.groupCellData.component.deselectRows(childKeys ?? []);
+  }
+};
 
-function setCheckedState(value:any){
-  isLoading = false;
-  checked = value;
+function setCheckedState(value:any) {
+  bindedLoading.value = false;
+  bindedCheck.value = value;
 }
 
 </script>
@@ -42,10 +43,19 @@ function setCheckedState(value:any){
 <template>
   <div class="group-row-flex">
     <div class="group-selection-front">
-      <dx-load-indicator :height="iconSize" :width="iconSize" :visible="isLoading"></dx-load-indicator>
-      <dx-check-box v-if="!isLoading" :iconSize="iconSize" :value="checked" @onValueChanged="checkBoxValueChanged"></dx-check-box>
+      <DxLoadIndicator
+        :height="iconSize"
+        :width="iconSize"
+        :visible="bindedLoading"
+      />
+      <DxCheckBox
+        v-if="!bindedLoading"
+        :icon-size="iconSize"
+        :value="bindedCheck"
+        @valueChanged="checkBoxValueChanged"
+      />
     </div>
-    <!-- <span>{{ groupCellData | groupText }}</span> -->
+    <span>{{ groupCellData.text }}</span>
   </div>
 </template>
 
