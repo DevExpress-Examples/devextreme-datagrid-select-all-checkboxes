@@ -12,13 +12,16 @@ const props = defineProps<{
 const iconSize = 18;
 
 let bindedLoading = ref(true);
-let bindedCheck = ref(false);
+let bindedCheck = ref<boolean | undefined>(false);
 let childKeys: any[] = [];
 
 onMounted(() => {
   props.initGroupRow({
     key: props.groupCellData.row.key,
-    setCheckedState: setCheckedState.bind(this)
+    setCheckedState: (value: boolean | undefined) => {
+      bindedLoading.value = false;
+      bindedCheck.value = value;
+    }
   }).then((res:string[])=>{
     childKeys = res;
   });
@@ -33,11 +36,13 @@ const checkBoxValueChanged = (e: DxCheckBoxTypes.ValueChangedEvent) => {
   }
 };
 
-function setCheckedState(value:any) {
-  bindedLoading.value = false;
-  bindedCheck.value = value;
-}
 
+function groupText():string{
+  let text = `${props.groupCellData.column.caption}: ${props.groupCellData.displayValue}`;
+  if (props.groupCellData.groupContinuedMessage) text += ` (${props.groupCellData.groupContinuedMessage})`;
+  if (props.groupCellData.groupContinuesMessage) text += ` (${props.groupCellData.groupContinuesMessage})`;
+  return text;
+}
 </script>
 
 <template>
@@ -55,7 +60,7 @@ function setCheckedState(value:any) {
         @valueChanged="checkBoxValueChanged"
       />
     </div>
-    <span>{{ groupCellData.text }}</span>
+    <span>{{ groupText() }}</span>
   </div>
 </template>
 

@@ -20,6 +20,13 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({
   const [checked, setChecked] = useState<boolean | undefined>(false);
   const [childKeys, setChildKeys] = useState<any>([]);
 
+  const groupText = ():string => {
+    let text = `${groupCellData.column.caption}: ${groupCellData.displayValue}`;
+    if (groupCellData.groupContinuedMessage) text += ` (${groupCellData.groupContinuedMessage})`;
+    if (groupCellData.groupContinuesMessage) text += ` (${groupCellData.groupContinuesMessage})`;
+    return text;
+  }
+
   const onValueChange = useCallback((value: boolean | null) => {
     if (value) {
       groupCellData.component.selectRows(childKeys ?? [], true);
@@ -54,7 +61,7 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({
           onValueChange={onValueChange}
         ></CheckBox>
       </div>
-      <span>{groupCellData.text}</span>
+      <span>{groupText()}</span>
     </div>
   );
 };
