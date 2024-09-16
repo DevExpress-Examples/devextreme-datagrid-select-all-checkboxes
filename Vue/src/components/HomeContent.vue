@@ -68,7 +68,7 @@ function initGroupRow(arg: IGroupRowReadyParameter) {
         mode="multiple"
       />
       <DxPaging :page-size="12"/>
-      <DxGrouping :auto-expand-all="true"/>
+      <DxGrouping :auto-expand-all="false"/>
       <DxColumn
         data-field="CustomerID"
         caption="Customer"
