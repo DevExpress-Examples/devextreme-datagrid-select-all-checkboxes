@@ -11,16 +11,16 @@ const props = defineProps<{
 
 const iconSize = 18;
 
-let bindedLoading = ref(true);
-let bindedCheck = ref<boolean | undefined>(false);
+let boundLoading = ref(true);
+let boundCheck = ref<boolean | undefined>(false);
 let childKeys: any[] = [];
 
 onMounted(() => {
   props.initGroupRow({
     key: props.groupCellData.row.key,
     setCheckedState: (value: boolean | undefined) => {
-      bindedLoading.value = false;
-      bindedCheck.value = value;
+      boundLoading.value = false;
+      boundCheck.value = value;
     }
   }).then((res:string[])=>{
     childKeys = res;
@@ -28,7 +28,7 @@ onMounted(() => {
 });
 
 const checkBoxValueChanged = (e: DxCheckBoxTypes.ValueChangedEvent) => {
-  bindedCheck.value = e.value;
+  boundCheck.value = e.value;
   if (e.value) {
     props.groupCellData.component.selectRows(childKeys ?? [], true);
   } else {
@@ -51,12 +51,12 @@ function groupText():string{
       <DxLoadIndicator
         :height="iconSize"
         :width="iconSize"
-        :visible="bindedLoading"
+        :visible="boundLoading"
       />
       <DxCheckBox
-        v-if="!bindedLoading"
+        v-if="!boundLoading"
         :icon-size="iconSize"
-        :value="bindedCheck"
+        :value="boundCheck"
         @valueChanged="checkBoxValueChanged"
       />
     </div>

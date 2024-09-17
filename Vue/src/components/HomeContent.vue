@@ -87,19 +87,16 @@ function initGroupRow(arg: IGroupRowReadyParameter) {
       <DxColumn
         data-field="ShipCountry"
         :group-index="0"
-        groupCellTemplate='groupCellTemplate'
       />
       <DxColumn
         data-field="ShipCity"
         :group-index="2"
-        groupCellTemplate='groupCellTemplate'
       />
       <DxColumn
         data-field="ShipVia"
         caption="Shipping Company"
         :group-index="1"
         data-type="number"
-        groupCellTemplate='groupCellTemplate'
       >
         <DxLookup
           :data-source="shippersData"

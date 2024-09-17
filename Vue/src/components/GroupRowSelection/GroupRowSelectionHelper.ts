@@ -19,12 +19,12 @@ export default class GroupSelectionHelper {
       this.selectedKeys = keys;
     }).catch(() => {});
     const defaultCustomizeCallback: Function | undefined = grid.option('customizeColumns');
-    // grid.option('customizeColumns', (columns: DxDataGridTypes.Column[]) => {
-    //   columns.forEach((column: DxDataGridTypes.Column) => {
-    //     column.groupCellTemplate = 'groupCellTemplate';
-    //   });
-    //   if (defaultCustomizeCallback) { defaultCustomizeCallback(columns); }
-    // });
+    grid.option('customizeColumns', (columns: DxDataGridTypes.Column[]) => {
+      columns.forEach((column: DxDataGridTypes.Column) => {
+        column.groupCellTemplate = 'groupCellTemplate';
+      });
+      if (defaultCustomizeCallback) { defaultCustomizeCallback(columns); }
+    });
     const defaultSelectionHandler: Function | undefined = grid.option('onSelectionChanged');
     grid.option('onSelectionChanged', (e: DxDataGridTypes.SelectionChangedEvent) => {
       this.selectionChanged(e);
