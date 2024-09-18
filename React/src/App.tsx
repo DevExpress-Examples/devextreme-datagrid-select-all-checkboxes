@@ -65,7 +65,7 @@ function App(): JSX.Element {
           showCheckBoxesMode='always'></Selection>
         <Paging pageSize={12}></Paging>
         <GroupPanel visible={true}></GroupPanel>
-        <Grouping autoExpandAll={true}></Grouping>
+        <Grouping autoExpandAll={false}></Grouping>
         <Column
           dataField='CustomerID'
           caption="Customer">
