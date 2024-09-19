@@ -27,7 +27,10 @@ DataGrid may query all data when selecting a group row with many data records. Y
 - **React**
     - [GroupRowComponent.tsx](React/src/GroupRowSelection/GroupRowComponent.tsx) 
     - [GroupRowSelectionHelper.tsx](React/src/GroupRowSelection/GroupRowSelectionHelper.tsx)
-
+- **Vue**
+    - [GroupRowComponent.vue](Vue/src/components/GroupRowSelection/GroupRowComponent.vue)
+    - [GroupRowSelectionHelper.ts](Vue/src/components/GroupRowSelection/GroupRowSelectionHelper.ts)
+      
 ## Implementation details
 
 The GroupSelectionBehavior class uses the [customizeColumns](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/#customizeColumns) function to specify [groupCellTemplate](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/columns/#groupCellTemplate) for all columns. This template creates a CheckBox for every group row.
