@@ -84,7 +84,7 @@ function Process-JavaScriptProjects {
         Push-Location $folderName
 
         try {
-            Write-Output "`nRemoving node_modules & package-lock.json: $pwd.Path"
+            Write-Output "`nRemoving node_modules & package-lock.json: $pwd"
             Remove-Item -Recurse -Force node_modules -ErrorAction SilentlyContinue
             Remove-Item -Force package-lock.json -ErrorAction SilentlyContinue
             Install-Packages -folderName $folderName -packages $packages -buildVersion $buildVersion
