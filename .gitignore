@@ -307,4 +307,5 @@ TesterMetadata.xml
 */wwwroot/*
 
 !*/wwwroot/css/Site.css
+!*/wwwroot/js/GroupSelectionBehavior.js
 *.DS_Store

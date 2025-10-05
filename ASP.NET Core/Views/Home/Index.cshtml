@@ -1,29 +1,48 @@
 @using ASP_NET_Core.Models
 
-<h2>Home</h2>
-
-@(Html.DevExtreme().DataGrid<SampleOrder>()
+@{
+    string url = "https://js.devexpress.com/Demos/Mvc/api/DataGridWebApi";
+}
+<script>
+    var helper = new GroupSelectionBehavior();
+</script>
+@(Html.DevExtreme().DataGrid()
+    .OnInitialized("(e) => { helper.init(e.component); }")
+    .Selection(s => 
+        s.Mode(SelectionMode.Multiple)
+        .Deferred(true)
+        .AllowSelectAll(true)
+        .ShowCheckBoxesMode(GridSelectionShowCheckBoxesMode.Always)
+    )
+    .Height(800)
+    .Width(1200)
     .ShowBorders(true)
-    .DataSource(d => d.Mvc().Controller("SampleData").LoadAction("Get").Key("OrderID"))
+    .DataSource(d => d.RemoteController().LoadUrl(url + "/Orders").Key("OrderID"))
     .Columns(columns => {
-        columns.AddFor(m => m.OrderID);
-        columns.AddFor(m => m.OrderDate);
-        columns.AddFor(m => m.CustomerName);
-        columns.AddFor(m => m.ShipCountry);
-        columns.AddFor(m => m.ShipCity);
+        columns.Add().DataField("OrderID");
+        columns.Add().DataField("CustomerID").Caption("Customer")
+            .Lookup(lk => lk
+                .ValueExpr("Value")
+                .DisplayExpr("Text")
+                .DataSource(d => d.RemoteController()
+                    .LoadUrl(url + "/CustomersLookup")
+                    .Key("Value"))
+        );
+        columns.Add().DataField("OrderDate").DataType(GridColumnDataType.Date);
+        columns.Add().DataField("Freight");
+        columns.Add().DataField("ShipCountry").GroupIndex(0);
+        columns.Add().DataField("ShipCity").GroupIndex(2);
+        columns.Add().DataField("ShipVia").GroupIndex(1)
+            .Lookup(lk => lk
+                .ValueExpr("Value")
+                .DisplayExpr("Text")
+                .DataSource(d => d.RemoteController()
+                    .LoadUrl(url + "/ShippersLookup")
+                    .Key("Value"))
+        );
     })
-    .Paging(p => p.PageSize(10))
-    .FilterRow(f => f.Visible(true))
-    .HeaderFilter(f => f.Visible(true))
     .GroupPanel(p => p.Visible(true))
     .Grouping(g => g.AutoExpandAll(false))
     .RemoteOperations(true)
-    .Summary(s => s
-        .TotalItems(totalItems => {
-            totalItems.AddFor(m => m.ShipCity).SummaryType(SummaryType.Count);
-        })
-        .GroupItems(groupItems => {
-            groupItems.Add().SummaryType(SummaryType.Count);
-        })
-    )
+    .CustomizeColumns("helper.customizeColumns")
 )
