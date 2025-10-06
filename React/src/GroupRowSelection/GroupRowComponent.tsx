@@ -1,15 +1,18 @@
 import { LoadIndicator } from 'devextreme-react';
 import './GroupRowComponent.css';
 import { type DataGridTypes } from 'devextreme-react/data-grid';
-import { useCallback, useEffect, useState } from 'react';
+import {
+  useEffect, useMemo, useState,
+} from 'react';
 import CheckBox from 'devextreme-react/check-box';
-import type { ValueChangedEvent } from 'devextreme/ui/check_box';
+import type { CheckBoxTypes } from 'devextreme-react/check-box';
+import { useEventCallback } from '../hooks';
 
 interface GroupRowProps {
   groupCellData: DataGridTypes.ColumnGroupCellTemplateData;
   childRowKeys?: any[];
   // eslint-disable-next-line no-unused-vars
-  onInitialized: (param: IGroupRowReadyParameter) => void;
+  onInitialized: (param: IGroupRowReadyParameter) => Promise<any> | undefined;
 }
 
 const iconSize = 18;
@@ -23,15 +26,15 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({
   const [checked, setChecked] = useState<boolean | undefined>(false);
   const [childKeys, setChildKeys] = useState<any>([]);
 
-  // eslint-disable-next-line func-style
-  const groupText = (): string => {
+  // Memoize the group text to avoid recalculating on every render
+  const groupText = useMemo((): string => {
     let text = `${groupCellData.column.caption}: ${groupCellData.displayValue}`;
     if (groupCellData.groupContinuedMessage) text += ` (${groupCellData.groupContinuedMessage})`;
     if (groupCellData.groupContinuesMessage) text += ` (${groupCellData.groupContinuesMessage})`;
     return text;
-  };
+  }, [groupCellData.column.caption, groupCellData.displayValue, groupCellData.groupContinuedMessage, groupCellData.groupContinuesMessage]);
 
-  const onValueChange = useCallback((value: ValueChangedEvent) => {
+  const onValueChange = useEventCallback((value: CheckBoxTypes.ValueChangedEvent) => {
     if (value) {
       // eslint-disable-next-line no-console
       groupCellData.component.selectRows(childKeys ?? [], true).catch(console.error);
@@ -39,21 +42,23 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({
       // eslint-disable-next-line no-console
       groupCellData.component.deselectRows(childKeys ?? []).catch(console.error);
     }
-  }, [childKeys, groupCellData]);
+  });
 
-  const setCheckedState = useCallback((value: boolean | undefined) => {
+  const setCheckedState = useEventCallback((value: boolean | undefined) => {
     setChecked(value);
     setIsLoading(false);
-  }, [setChecked, setIsLoading]);
+  });
+
+  const groupRowKey = useMemo(() => JSON.stringify(groupCellData.row.key), [groupCellData.row.key]);
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-invalid-this
-    const arr = onInitialized({ key: groupCellData.row.key, setCheckedState: setCheckedState.bind(this) });
+    const action = onInitialized?.({ key: groupCellData.row.key, setCheckedState: setCheckedState.bind(this) });
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    (arr as unknown as Promise<any>).then((children: any) => {
+    action?.then((children: any) => {
       setChildKeys(children);
     });
-  }, [groupCellData, setCheckedState, setChildKeys]);
+  }, [groupRowKey]);
 
   return (
     <div className="group-row-flex">
@@ -69,7 +74,7 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({
           onValueChanged={onValueChange}
         ></CheckBox>
       </div>
-      <span>{groupText()}</span>
+      <span>{groupText}</span>
     </div>
   );
 };

@@ -2,3 +2,13 @@
     margin: 50px;
     width: 90vw;
 }
+
+.group-selection-check-box {
+  margin-right: 10px;
+}
+
+.group-row-flex {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}

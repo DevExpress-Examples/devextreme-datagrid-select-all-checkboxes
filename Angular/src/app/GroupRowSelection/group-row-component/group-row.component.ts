@@ -1,8 +1,8 @@
 import {
   Component, Input, Output, EventEmitter, AfterViewInit,
 } from '@angular/core';
-import { DxCheckBoxTypes } from 'devextreme-angular/ui/check-box';
-import { DxDataGridTypes } from 'devextreme-angular/ui/data-grid';
+import type { DxCheckBoxTypes } from 'devextreme-angular/ui/check-box';
+import type { DxDataGridTypes } from 'devextreme-angular/ui/data-grid';
 
 @Component({
   selector: 'group-row-selectable',
