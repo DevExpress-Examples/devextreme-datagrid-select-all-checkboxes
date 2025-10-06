@@ -17,16 +17,21 @@ DataGrid may query all data when selecting a group row with many data records. Y
 ## Files to Review
 
 - **jQuery**
-    - [index.js](jQuery/index.js)
-    - [GroupSelectionBehavior.js](jQuery/GroupSelectionBehavior.js)
+    - [index.js](jQuery/src/index.js)
+    - [GroupSelectionBehavior.js](jQuery/src/GroupSelectionBehavior.js)
+- **ASP.NET Core**
+    - [Index.cshtml](ASP.NET%20Core/Views/Home/Index/cshtml)
+    - [GroupSelectionBehavior.js](ASP.NET%20Core/wwwroot/js/GroupSelectionBehavior.js)    
 - **Angular**
     - [GroupRowSelectionHelper.ts](Angular/src/app/GroupRowSelection/GroupRowSelectionHelper.ts)
     - [group-row.component.html](Angular/src/app/GroupRowSelection/group-row-component/group-row.component.html)
     - [group-row.component.ts](Angular/src/app/GroupRowSelection/group-row-component/group-row.component.ts)
 - **React**
-    - [GroupRowComponent.tsx](React/src/GroupRowSelection/GroupRowComponent.tsx) 
+    - [App.tsx](React/src/App.tsx)
+    - [GroupRowComponent.tsx](React/src/GroupRowSelection//GroupRowComponent.tsx) 
     - [GroupRowSelectionHelper.tsx](React/src/GroupRowSelection/GroupRowSelectionHelper.tsx)
 - **Vue**
+    - [Home.vue](Vue/src/components/HomeContent.vue)
     - [GroupRowComponent.vue](Vue/src/components/GroupRowSelection/GroupRowComponent.vue)
     - [GroupRowSelectionHelper.ts](Vue/src/components/GroupRowSelection/GroupRowSelectionHelper.ts)
       
