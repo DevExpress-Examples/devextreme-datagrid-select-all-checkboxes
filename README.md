@@ -20,7 +20,7 @@ DataGrid may query all data when selecting a group row with many data records. Y
     - [index.js](jQuery/src/index.js)
     - [GroupSelectionBehavior.js](jQuery/src/GroupSelectionBehavior.js)
 - **ASP.NET Core**
-    - [Index.cshtml](ASP.NET%20Core/Views/Home/Index/cshtml)
+    - [Index.cshtml](ASP.NET%20Core/Views/Home/Index.cshtml)
     - [GroupSelectionBehavior.js](ASP.NET%20Core/wwwroot/js/GroupSelectionBehavior.js)    
 - **Angular**
     - [GroupRowSelectionHelper.ts](Angular/src/app/GroupRowSelection/GroupRowSelectionHelper.ts)
