@@ -15,6 +15,7 @@ import GroupRowComponent, {
   type IGroupRowReadyParameter,
 } from "./GroupRowSelection/GroupRowComponent";
 import { useEventCallback } from "./hooks";
+import { useGroupRowSelection } from "./GroupRowSelection/context/GroupRowSelectionContext";
 
 const url = "https://js.devexpress.com/Demos/NetCore/api/DataGridWebApi";
 const dataSource = AspNetData.createStore({
@@ -40,7 +41,8 @@ const shippersData = AspNetData.createStore({
 });
 
 function App(): JSX.Element {
-  const { gridRef, groupRowInit } = useGroupSelectionHelper();
+  const { groupRowInit } = useGroupSelectionHelper();
+  const { registerGrid } = useGroupRowSelection();
 
   const groupRowInitHandler = useEventCallback((arg: IGroupRowReadyParameter) =>
     groupRowInit(arg)
@@ -58,12 +60,16 @@ function App(): JSX.Element {
   return (
     <div className="main">
       <DataGrid
-        ref={gridRef}
         dataSource={dataSource}
         remoteOperations={true}
         width="100%"
         height={600}
         showBorders={true}
+        onInitialized={(e) => {
+          if (!e.component) return;
+
+          registerGrid(e.component);
+        }}
       >
         <Selection
           deferred={true}

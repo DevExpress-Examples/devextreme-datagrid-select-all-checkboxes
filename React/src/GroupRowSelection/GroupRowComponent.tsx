@@ -49,7 +49,6 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({
 
   const onValueChanged = useCallback(
     (e: CheckBoxTypes.ValueChangedEvent) => {
-      console.log(1);
       if (!e.event) return;
       if (actionInProgressRef.current) return;
       actionInProgressRef.current = true;

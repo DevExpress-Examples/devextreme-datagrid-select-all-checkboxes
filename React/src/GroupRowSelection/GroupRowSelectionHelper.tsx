@@ -1,25 +1,15 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useRef, useCallback } from "react";
 import { useGroupRowSelection } from "./context/GroupRowSelectionContext";
 import { isItemsArray } from "devextreme-react/common/data";
-import type { DataGridRef, DataGridTypes } from "devextreme-react/data-grid";
 import { type LoadOptions } from "devextreme/common/data";
 import type dxDataGrid from "devextreme/ui/data_grid";
 import { type IGroupRowReadyParameter } from "./GroupRowComponent";
 
 export function useGroupSelectionHelper() {
-  const gridRef = useRef<DataGridRef | null>(null);
-  const groupedColumnsRef = useRef<DataGridTypes.Column[]>([]);
-  const getSelectedKeysPromiseRef = useRef<Promise<any[]> | null>(null);
   const groupChildKeysRef = useRef<Record<string, any>>({});
 
-  const { syncSelection } = useGroupRowSelection();
-
-  const collectGroupedColumns = useCallback((grid: dxDataGrid) => {
-    return grid
-      .getVisibleColumns()
-      .filter((c) => c.groupIndex != null && c.groupIndex >= 0)
-      .sort((a, b) => (a.groupIndex! > b.groupIndex! ? 1 : -1));
-  }, []);
+  const { handleGroupSelection, gridInstanceRef, groupedColumnsRef } =
+    useGroupRowSelection();
 
   const calcCheckBoxId = useCallback(
     (grid: dxDataGrid, groupRowKey: string[]) => {
@@ -28,19 +18,9 @@ export function useGroupSelectionHelper() {
     []
   );
 
-  const getSelectedKeys = useCallback((grid: dxDataGrid) => {
-    if (grid.option("selection.deferred")) {
-      if (!getSelectedKeysPromiseRef.current) {
-        getSelectedKeysPromiseRef.current = grid.getSelectedRowKeys();
-      }
-      return getSelectedKeysPromiseRef.current;
-    }
-    return grid.getSelectedRowKeys();
-  }, []);
-
   const groupRowInit = useCallback(
     (arg: IGroupRowReadyParameter): Promise<any> => {
-      const grid = gridRef.current?.instance();
+      const grid = gridInstanceRef.current?.instance();
       if (!grid) return Promise.resolve([]);
 
       const checkBoxId = calcCheckBoxId(grid, arg.key);
@@ -76,41 +56,10 @@ export function useGroupSelectionHelper() {
     [calcCheckBoxId]
   );
 
-  useEffect(() => {
-    const grid = gridRef.current?.instance();
-    if (!grid) return;
-
-    groupedColumnsRef.current = collectGroupedColumns(grid);
-
-    getSelectedKeys(grid)
-      .then((keys) => syncSelection(keys))
-      .catch(() => {});
-
-    const defaultSelectionChanged = grid.option("onSelectionChanged");
-    const defaultOptionChanged = grid.option("onOptionChanged");
-
-    grid.option("onSelectionChanged", (e) => {
-      getSelectedKeysPromiseRef.current = null;
-
-      getSelectedKeys(e.component).then((keys) => {
-        syncSelection(keys);
-      });
-
-      defaultSelectionChanged?.(e);
-    });
-
-    grid.option("onOptionChanged", (e) => {
-      if (e.fullName.includes("groupIndex")) {
-        groupedColumnsRef.current = collectGroupedColumns(grid);
-      }
-      defaultOptionChanged?.(e);
-    });
-  }, [collectGroupedColumns, getSelectedKeys, syncSelection]);
-
   return {
-    gridRef,
     groupRowInit,
     getChildRowKeys: (grid: dxDataGrid, key: string[]) =>
       groupChildKeysRef.current[calcCheckBoxId(grid, key)],
+    handleGroupSelection,
   };
 }
