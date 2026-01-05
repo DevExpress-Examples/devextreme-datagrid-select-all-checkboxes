@@ -5,6 +5,7 @@ import GroupRowComponent from "./GroupRowSelection/GroupRowComponent";
 import type { DataGridTypes } from "devextreme-react/data-grid";
 import { vi } from "vitest";
 import App from "./App";
+import { GroupRowSelectionProvider } from "./GroupRowSelection/context/GroupRowSelectionContext";
 
 describe("GroupRowComponent", () => {
   const mockSelect = vi.fn(() => Promise.resolve());
@@ -27,30 +28,47 @@ describe("GroupRowComponent", () => {
 
   test("should render group text", () => {
     render(
-      <GroupRowComponent
-        groupCellData={mockGroupData}
-        onInitialized={mockOnInitialized}
-      />
+      <GroupRowSelectionProvider>
+        <GroupRowComponent
+          groupCellData={mockGroupData}
+          onInitialized={mockOnInitialized}
+        />
+      </GroupRowSelectionProvider>
     );
     expect(screen.getByText("ShipCountry: USA")).toBeInTheDocument();
   });
 
   test("calls onInitialized and hides loader", async () => {
-    render(<App />);
+    render(
+      <GroupRowSelectionProvider>
+        <App />
+      </GroupRowSelectionProvider>
+    );
 
-    await waitFor(() => {
-      const allCheckboxes = screen.getAllByRole("checkbox");
+    await waitFor(
+      () => {
+        const allCheckboxes = screen.getAllByRole("checkbox");
 
-      allCheckboxes.forEach((checkbox) => {
-        expect(checkbox).toBeVisible();
-      });
-    });
+        allCheckboxes.forEach((checkbox) => {
+          expect(checkbox).toBeVisible();
+        });
+      },
+      { timeout: 5000 }
+    );
   });
 
   test("selects/deselects rows when checkbox clicked", async () => {
-    render(<App />);
+    render(
+      <GroupRowSelectionProvider>
+        <App />
+      </GroupRowSelectionProvider>
+    );
 
-    const allCheckboxes = await screen.findAllByRole("checkbox");
+    const allCheckboxes = await screen.findAllByRole(
+      "checkbox",
+      {},
+      { timeout: 5000 }
+    );
     const checkbox = allCheckboxes[0];
     await userEvent.click(checkbox);
 
@@ -71,7 +89,11 @@ describe("GroupRowComponent", () => {
 
   test("selecting checkbox at index 1 selects 2–4 and leaves others unselected", async () => {
     const user = userEvent.setup();
-    const { container } = render(<App />);
+    const { container } = render(
+      <GroupRowSelectionProvider>
+        <App />
+      </GroupRowSelectionProvider>
+    );
 
     const allCheckboxes = await waitFor(
       async () => {

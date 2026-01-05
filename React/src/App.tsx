@@ -1,4 +1,3 @@
-import { useEffect, useRef } from "react";
 import "./App.css";
 import "devextreme/dist/css/dx.material.blue.light.compact.css";
 import * as AspNetData from "devextreme-aspnet-data-nojquery";
@@ -7,12 +6,11 @@ import DataGrid, {
   type DataGridTypes,
   GroupPanel,
   Grouping,
-  type DataGridRef,
   Lookup,
   Paging,
   Selection,
 } from "devextreme-react/data-grid";
-import GroupSelectionHelper from "./GroupRowSelection/GroupRowSelectionHelper";
+import { useGroupSelectionHelper } from "./GroupRowSelection/GroupRowSelectionHelper";
 import GroupRowComponent, {
   type IGroupRowReadyParameter,
 } from "./GroupRowSelection/GroupRowComponent";
@@ -42,24 +40,17 @@ const shippersData = AspNetData.createStore({
 });
 
 function App(): JSX.Element {
-  const dataGrid = useRef<DataGridRef>(null);
-  const helperRef = useRef<GroupSelectionHelper>();
+  const { gridRef, groupRowInit } = useGroupSelectionHelper();
 
-  useEffect(() => {
-    if (dataGrid?.current) {
-      helperRef.current = new GroupSelectionHelper(dataGrid.current.instance());
-    }
-  }, [dataGrid]);
-
-  const groupRowInit = useEventCallback((arg: IGroupRowReadyParameter) =>
-    helperRef.current?.groupRowInit(arg)
+  const groupRowInitHandler = useEventCallback((arg: IGroupRowReadyParameter) =>
+    groupRowInit(arg)
   );
 
   const groupCellRender = useEventCallback(
     (group: DataGridTypes.ColumnGroupCellTemplateData): JSX.Element => (
       <GroupRowComponent
         groupCellData={group}
-        onInitialized={groupRowInit}
+        onInitialized={groupRowInitHandler}
       ></GroupRowComponent>
     )
   );
@@ -67,7 +58,7 @@ function App(): JSX.Element {
   return (
     <div className="main">
       <DataGrid
-        ref={dataGrid}
+        ref={gridRef}
         dataSource={dataSource}
         remoteOperations={true}
         width="100%"
