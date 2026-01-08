@@ -1,6 +1,3 @@
-import "./App.css";
-import "devextreme/dist/css/dx.material.blue.light.compact.css";
-import * as AspNetData from "devextreme-aspnet-data-nojquery";
 import DataGrid, {
   Column,
   type DataGridTypes,
@@ -10,12 +7,16 @@ import DataGrid, {
   Paging,
   Selection,
 } from "devextreme-react/data-grid";
+import * as AspNetData from "devextreme-aspnet-data-nojquery";
+import { useEventCallback } from "./hooks";
 import { useGroupSelectionHelper } from "./GroupRowSelection/GroupRowSelectionHelper";
+import { useGroupRowSelection } from "./GroupRowSelection/selection-context/row-selection-context";
 import GroupRowComponent, {
   type IGroupRowReadyParameter,
 } from "./GroupRowSelection/GroupRowComponent";
-import { useEventCallback } from "./hooks";
-import { useGroupRowSelection } from "./GroupRowSelection/context/GroupRowSelectionContext";
+
+import "./App.css";
+import "devextreme/dist/css/dx.material.blue.light.compact.css";
 
 const url = "https://js.devexpress.com/Demos/NetCore/api/DataGridWebApi";
 const dataSource = AspNetData.createStore({
@@ -57,28 +58,32 @@ function App(): JSX.Element {
     )
   );
 
+  const handleInitialized = useEventCallback(
+    (e: DataGridTypes.InitializedEvent) => {
+      if (!e.component) return;
+
+      registerGrid(e.component);
+    }
+  );
+
   return (
     <div className="main">
       <DataGrid
-        dataSource={dataSource}
-        remoteOperations={true}
+        showBorders
         width="100%"
         height={600}
-        showBorders={true}
-        onInitialized={(e) => {
-          if (!e.component) return;
-
-          registerGrid(e.component);
-        }}
+        remoteOperations
+        dataSource={dataSource}
+        onInitialized={handleInitialized}
       >
         <Selection
-          deferred={true}
+          deferred
+          allowSelectAll
           mode="multiple"
-          allowSelectAll={true}
           showCheckBoxesMode="always"
         ></Selection>
         <Paging pageSize={12}></Paging>
-        <GroupPanel visible={true}></GroupPanel>
+        <GroupPanel visible></GroupPanel>
         <Grouping autoExpandAll={false}></Grouping>
         <Column dataField="CustomerID" caption="Customer">
           <Lookup

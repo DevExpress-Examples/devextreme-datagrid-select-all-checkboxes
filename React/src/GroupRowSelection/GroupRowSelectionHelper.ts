@@ -1,9 +1,9 @@
 import { useRef, useCallback } from "react";
-import { useGroupRowSelection } from "./context/GroupRowSelectionContext";
+import { useGroupRowSelection } from "./selection-context/row-selection-context";
 import { isItemsArray } from "devextreme-react/common/data";
-import { type LoadOptions } from "devextreme/common/data";
+import type { LoadOptions } from "devextreme/common/data";
 import type dxDataGrid from "devextreme/ui/data_grid";
-import { type IGroupRowReadyParameter } from "./GroupRowComponent";
+import type { IGroupRowReadyParameter } from "./GroupRowComponent";
 
 export function useGroupSelectionHelper() {
   const groupChildKeysRef = useRef<Record<string, any>>({});

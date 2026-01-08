@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState, useCallback } from "react";
-import { useGroupRowSelection } from "./context/GroupRowSelectionContext";
+import { useGroupRowSelection } from "./selection-context/row-selection-context";
 import CheckBox, { type CheckBoxTypes } from "devextreme-react/check-box";
 import { LoadIndicator } from "devextreme-react";
 import { type DataGridTypes } from "devextreme-react/data-grid";
