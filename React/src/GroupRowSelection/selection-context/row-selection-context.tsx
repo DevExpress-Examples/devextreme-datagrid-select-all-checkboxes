@@ -14,10 +14,12 @@ const GroupRowSelectionContext = createContext<
 export const GroupRowSelectionProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const { selectedRows, syncSelection } = useSelectedRows();
   const { setGroupLoading, isGroupLoading, hasAnyLoading } = useGroupLoading();
-  const { gridInstanceRef, groupedColumnsRef, registerGrid } =
-    useGridInstance(syncSelection);
+  const { selectedRows, syncSelection } = useSelectedRows();
+  const { gridInstanceRef, groupedColumnsRef, registerGrid } = useGridInstance(
+    syncSelection,
+    hasAnyLoading
+  );
   const handleGroupSelection = useGroupSelectionHandler(
     syncSelection,
     setGroupLoading

@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useState, useCallback } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+  useRef,
+} from "react";
 import { useGroupRowSelection } from "./selection-context/row-selection-context";
 import CheckBox, { type CheckBoxTypes } from "devextreme-react/check-box";
 import { LoadIndicator } from "devextreme-react";
@@ -22,19 +28,19 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({
 }) => {
   const [childKeys, setChildKeys] = useState<any[]>([]);
   const [isInitializing, setIsInitializing] = useState(true);
-  const actionInProgressRef = React.useRef(false);
+  const actionInProgressRef = useRef(false);
 
   const {
     selectedRows,
-    isGroupLoading,
-    hasAnyLoading,
     handleGroupSelection,
+    isGroupLoading,
     setGroupLoading,
   } = useGroupRowSelection();
 
   const { component: gridInstance, row } = groupCellData;
 
   const isLoading = isGroupLoading(row.key);
+  const [blocked, setBlocked] = useState(false);
 
   const checkedValue = useMemo(() => {
     if (!childKeys.length) return false;
@@ -53,21 +59,19 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({
       if (actionInProgressRef.current) return;
       actionInProgressRef.current = true;
 
+      setBlocked(true);
       const action = e.value ? "select" : "deselect";
       handleGroupSelection(row.key, childKeys, action, gridInstance).finally(
         () => {
           actionInProgressRef.current = false;
+
+          setTimeout(() => {
+            setBlocked(false);
+          }, 100);
         }
       );
     },
-    [
-      childKeys,
-      gridInstance,
-      handleGroupSelection,
-      hasAnyLoading,
-      isLoading,
-      row.key,
-    ]
+    [childKeys, gridInstance, handleGroupSelection, isLoading, row.key]
   );
 
   useEffect(() => {
@@ -112,7 +116,7 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({
     return text;
   }, [groupCellData]);
 
-  const isLocked = isInitializing || (!isLoading && hasAnyLoading);
+  const showLoading = isInitializing || isLoading;
 
   return (
     <div
@@ -124,18 +128,18 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({
         onClick={stopPropagation}
         style={{ marginRight: "10px", width: iconSize, height: iconSize }}
       >
-        {isLocked ? (
+        {showLoading ? (
           <LoadIndicator height={iconSize} width={iconSize} />
         ) : (
           <CheckBox
             value={checkedValue}
             onValueChanged={onValueChanged}
             iconSize={iconSize}
-            disabled={isLocked}
+            disabled={blocked}
           />
         )}
       </div>
-      <span style={{ opacity: isLocked ? 0.5 : 1 }}>{groupText}</span>
+      <span style={{ opacity: blocked ? 0.5 : 1 }}>{groupText}</span>
     </div>
   );
 };

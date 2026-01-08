@@ -50,7 +50,23 @@ export const useGroupLoading = () => {
   }, []);
 
   const isGroupLoading = useCallback(
-    (groupKey: any) => loadingGroupKeys.has(serializeKey(groupKey)),
+    (groupKey: any) => {
+      if (loadingGroupKeys.has(serializeKey(groupKey))) return true;
+
+      if (Array.isArray(groupKey)) {
+        const parentPath = [...groupKey];
+
+        while (parentPath.length > 1) {
+          parentPath.pop();
+
+          if (loadingGroupKeys.has(serializeKey(parentPath))) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    },
     [loadingGroupKeys]
   );
 
@@ -67,11 +83,14 @@ export const useGridInstance = (
     keys:
       | (string | number)[]
       | ((prev: (string | number)[]) => (string | number)[])
-  ) => void
+  ) => void,
+  hasAnyLoading?: boolean
 ) => {
   const gridInstanceRef = useRef<dxDataGrid<any, any> | null>(null);
   const groupedColumnsRef = useRef<Record<string, any>[]>([]);
-  const getSelectedKeysPromiseRef = useRef<Promise<any[]> | null>(null);
+
+  const latestRequestIdRef = useRef<number>(0);
+  const isFetchingRef = useRef<boolean>(false);
 
   const collectGroupedColumns = useCallback((grid: dxDataGrid) => {
     return grid
@@ -81,14 +100,29 @@ export const useGridInstance = (
   }, []);
 
   const getSelectedKeys = useCallback((grid: dxDataGrid) => {
-    if (grid.option("selection.deferred")) {
-      if (!getSelectedKeysPromiseRef.current) {
-        getSelectedKeysPromiseRef.current = grid.getSelectedRowKeys();
-      }
-      return getSelectedKeysPromiseRef.current;
-    }
     return grid.getSelectedRowKeys();
   }, []);
+
+  const triggerFullSync = useCallback(
+    (grid: dxDataGrid) => {
+      isFetchingRef.current = true;
+      const currentId = ++latestRequestIdRef.current;
+
+      getSelectedKeys(grid)
+        .then((keys) => {
+          if (latestRequestIdRef.current === currentId) {
+            syncSelection(keys);
+            isFetchingRef.current = false;
+          }
+        })
+        .catch(() => {
+          if (latestRequestIdRef.current === currentId) {
+            isFetchingRef.current = false;
+          }
+        });
+    },
+    [getSelectedKeys, syncSelection]
+  );
 
   const registerGrid = useCallback(
     (grid: dxDataGrid) => {
@@ -99,18 +133,26 @@ export const useGridInstance = (
         .then((keys: (string | number)[]) => syncSelection(keys))
         .catch(() => {});
 
-      const defaultSelectionChanged = grid.option("onSelectionChanged");
       const defaultOptionChanged = grid.option("onOptionChanged");
 
-      grid.option("onSelectionChanged", (e) => {
-        getSelectedKeysPromiseRef.current = null;
-        getSelectedKeys(e.component).then((keys: (string | number)[]) =>
-          syncSelection(keys)
-        );
-        defaultSelectionChanged?.(e);
-      });
-
       grid.option("onOptionChanged", (e) => {
+        if (e.fullName === "selectionFilter") {
+          const selectAllAction = e.value === null;
+          const deselectAllAction =
+            e.previousValue === null &&
+            Array.isArray(e.value) &&
+            e.value.length === 0;
+
+          if (selectAllAction || deselectAllAction) {
+            triggerFullSync(grid);
+          } else {
+            if (!hasAnyLoading) {
+              grid.getSelectedRowKeys().then((selectedKeys) => {
+                syncSelection(selectedKeys);
+              });
+            }
+          }
+        }
         if (e.fullName.includes("groupIndex")) {
           groupedColumnsRef.current = collectGroupedColumns(grid);
         }
@@ -143,20 +185,13 @@ export const useGroupSelectionHandler = (
 
       try {
         if (action === "select") {
-          syncSelection((prevSelectedRows) => {
-            const next = new Set(prevSelectedRows);
-            childKeys.forEach((key) => next.add(key));
-            return Array.from(next);
-          });
           await gridInstance.selectRows(childKeys, true);
         } else {
-          syncSelection((prevSelectedRows) => {
-            const next = new Set(prevSelectedRows);
-            childKeys.forEach((key) => next.delete(key));
-            return Array.from(next);
-          });
           await gridInstance.deselectRows(childKeys);
         }
+
+        const selectedKeys = await gridInstance.getSelectedRowKeys();
+        syncSelection(selectedKeys);
       } catch (error) {
         console.error("Group selection failed", error);
       } finally {
