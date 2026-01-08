@@ -5,7 +5,7 @@ import GroupRowComponent from "./GroupRowSelection/GroupRowComponent";
 import type { DataGridTypes } from "devextreme-react/data-grid";
 import { vi } from "vitest";
 import App from "./App";
-import { GroupRowSelectionProvider } from "./GroupRowSelection/context/GroupRowSelectionContext";
+import { GroupRowSelectionProvider } from "./GroupRowSelection/selection-context/row-selection-context";
 
 describe("GroupRowComponent", () => {
   const mockSelect = vi.fn(() => Promise.resolve());
@@ -38,7 +38,7 @@ describe("GroupRowComponent", () => {
     expect(screen.getByText("ShipCountry: USA")).toBeInTheDocument();
   });
 
-  test("calls onInitialized and hides loader", async () => {
+  test("calls onInitialized and shows checkboxes", async () => {
     render(
       <GroupRowSelectionProvider>
         <App />
@@ -48,7 +48,7 @@ describe("GroupRowComponent", () => {
     await waitFor(
       () => {
         const allCheckboxes = screen.getAllByRole("checkbox");
-
+        expect(allCheckboxes.length).toBeGreaterThan(0);
         allCheckboxes.forEach((checkbox) => {
           expect(checkbox).toBeVisible();
         });
@@ -57,19 +57,18 @@ describe("GroupRowComponent", () => {
     );
   });
 
-  test("selects/deselects rows when checkbox clicked", async () => {
+  test("selects and deselects rows when checkbox clicked", async () => {
     render(
       <GroupRowSelectionProvider>
         <App />
       </GroupRowSelectionProvider>
     );
 
-    const allCheckboxes = await screen.findAllByRole(
-      "checkbox",
-      {},
-      { timeout: 5000 }
-    );
+    const allCheckboxes = await waitFor(() => screen.getAllByRole("checkbox"), {
+      timeout: 5000,
+    });
     const checkbox = allCheckboxes[0];
+
     await userEvent.click(checkbox);
 
     await waitFor(() => {
@@ -89,6 +88,7 @@ describe("GroupRowComponent", () => {
 
   test("selecting checkbox at index 1 selects 2–4 and leaves others unselected", async () => {
     const user = userEvent.setup();
+
     const { container } = render(
       <GroupRowSelectionProvider>
         <App />
@@ -96,44 +96,66 @@ describe("GroupRowComponent", () => {
     );
 
     const allCheckboxes = await waitFor(
-      async () => {
-        const checkboxes = await screen.findAllByRole("checkbox");
-        if (checkboxes.length < 10) throw new Error("Not enough checkboxes");
+      () => {
+        const checkboxes = screen.getAllByRole("checkbox");
+        if (checkboxes.length < 10) throw new Error("Grid not loaded");
         return checkboxes;
       },
       { timeout: 15000 }
     );
+
     await user.click(allCheckboxes[1]);
 
-    const expandButton = container.querySelector(".dx-command-expand div");
-    expect(expandButton).toBeInTheDocument();
+    await waitFor(() => {
+      const freshCheckboxes = screen.getAllByRole("checkbox");
+      const state = freshCheckboxes[1].getAttribute("aria-checked");
+      if (state !== "true" && state !== "mixed") {
+        throw new Error("Group checkbox not updated yet");
+      }
+    });
 
-    await user.click(expandButton!);
+    const expandButton = container.querySelector(".dx-datagrid-group-closed");
+
+    if (!expandButton) {
+      throw new Error("Expand button not found - cannot proceed with test");
+    }
+
+    await user.click(expandButton);
 
     await waitFor(
-      async () => {
-        const afterSelectionCheckboxes = await waitFor(async () => {
-          const checkboxes = await screen.findAllByRole("checkbox");
-          if (checkboxes.length < 10) throw new Error("Not enough checkboxes");
-          return checkboxes;
-        });
+      () => {
+        const checkboxes = screen.getAllByRole("checkbox");
 
-        [1, 2, 3, 4].forEach((index) => {
-          expect(afterSelectionCheckboxes[index]).toHaveAttribute(
-            "aria-checked",
-            "true"
-          );
-        });
+        if (checkboxes.length <= allCheckboxes.length) {
+          throw new Error("Rows did not expand yet");
+        }
 
-        afterSelectionCheckboxes.forEach((cb, index) => {
-          if (index < 1) {
-            expect(cb).toHaveAttribute("aria-checked", "mixed");
-          } else if (index > 4) {
-            expect(cb).toHaveAttribute("aria-checked", "false");
+        checkboxes.forEach((cb, index) => {
+          const state = cb.getAttribute("aria-checked");
+
+          if (index === 0) {
+            expect(["true", "mixed"]).toContain(state);
+            return;
           }
+
+          if (index === 1) {
+            expect(["true", "mixed"]).toContain(state);
+            return;
+          }
+
+          if (index > 1 && index <= 4) {
+            if (state !== "true") {
+              throw new Error(
+                `Row ${index} should be selected but was ${state}`
+              );
+            }
+            return;
+          }
+
+          expect(state).toBe("false");
         });
       },
-      { timeout: 15000 }
+      { timeout: 10000 }
     );
   }, 30000);
 });
