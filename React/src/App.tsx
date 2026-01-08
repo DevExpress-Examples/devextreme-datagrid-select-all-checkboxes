@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import DataGrid, {
   Column,
   type DataGridTypes,
@@ -49,6 +50,15 @@ function App(): JSX.Element {
     groupRowInit(arg)
   );
 
+  const handleInitialized = useCallback(
+    (e: DataGridTypes.InitializedEvent) => {
+      if (!e.component) return;
+
+      registerGrid(e.component);
+    },
+    [registerGrid]
+  );
+
   const groupCellRender = useEventCallback(
     (group: DataGridTypes.ColumnGroupCellTemplateData): JSX.Element => (
       <GroupRowComponent
@@ -58,17 +68,10 @@ function App(): JSX.Element {
     )
   );
 
-  const handleInitialized = useEventCallback(
-    (e: DataGridTypes.InitializedEvent) => {
-      if (!e.component) return;
-
-      registerGrid(e.component);
-    }
-  );
-
   return (
     <div className="main">
       <DataGrid
+        id="gridContainer"
         showBorders
         width="100%"
         height={600}
