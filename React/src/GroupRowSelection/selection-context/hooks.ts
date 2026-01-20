@@ -4,14 +4,14 @@ import type dxDataGrid from "devextreme/ui/data_grid";
 
 export const useSelectedRows = () => {
   const [selectedRows, setSelectedRows] = useState<Set<string | number>>(
-    new Set()
+    new Set(),
   );
 
   const syncSelection = useCallback(
     (
       arg:
         | (string | number)[]
-        | ((prevSelectedRows: (string | number)[]) => (string | number)[])
+        | ((prevSelectedRows: (string | number)[]) => (string | number)[]),
     ) => {
       if (typeof arg === "function") {
         setSelectedRows((prev) => {
@@ -22,7 +22,7 @@ export const useSelectedRows = () => {
       }
       setSelectedRows(new Set(arg));
     },
-    []
+    [],
   );
 
   return { selectedRows, syncSelection };
@@ -30,7 +30,7 @@ export const useSelectedRows = () => {
 
 export const useGroupLoading = () => {
   const [loadingGroupKeys, setLoadingGroupKeys] = useState<Map<string, number>>(
-    () => new Map()
+    () => new Map(),
   );
 
   const setGroupLoading = useCallback((groupKey: any, isLoading: boolean) => {
@@ -67,12 +67,12 @@ export const useGroupLoading = () => {
 
       return false;
     },
-    [loadingGroupKeys]
+    [loadingGroupKeys],
   );
 
   const hasAnyLoading = useMemo(
     () => loadingGroupKeys.size > 0,
-    [loadingGroupKeys]
+    [loadingGroupKeys],
   );
 
   return { setGroupLoading, isGroupLoading, hasAnyLoading };
@@ -82,9 +82,9 @@ export const useGridInstance = (
   syncSelection: (
     keys:
       | (string | number)[]
-      | ((prev: (string | number)[]) => (string | number)[])
+      | ((prev: (string | number)[]) => (string | number)[]),
   ) => void,
-  hasAnyLoading?: boolean
+  hasAnyLoading?: boolean,
 ) => {
   const gridInstanceRef = useRef<dxDataGrid<any, any> | null>(null);
   const groupedColumnsRef = useRef<Record<string, any>[]>([]);
@@ -121,7 +121,7 @@ export const useGridInstance = (
           }
         });
     },
-    [getSelectedKeys, syncSelection]
+    [getSelectedKeys, syncSelection],
   );
 
   const registerGrid = useCallback(
@@ -138,12 +138,12 @@ export const useGridInstance = (
       grid.option("onOptionChanged", (e) => {
         if (e.fullName === "selectionFilter") {
           const selectAllAction = e.value === null;
-          const deselectAllAction =
-            e.previousValue === null &&
-            Array.isArray(e.value) &&
-            e.value.length === 0;
+          const isDeselectAction =
+            e.previousValue?.length > e.value?.length && e.value !== null;
 
-          if (selectAllAction || deselectAllAction) {
+          if (isDeselectAction) syncSelection(e.value);
+
+          if (selectAllAction) {
             triggerFullSync(grid);
           } else {
             if (!hasAnyLoading) {
@@ -159,7 +159,7 @@ export const useGridInstance = (
         defaultOptionChanged?.(e);
       });
     },
-    [collectGroupedColumns, getSelectedKeys, syncSelection]
+    [collectGroupedColumns, getSelectedKeys, syncSelection],
   );
 
   return { gridInstanceRef, groupedColumnsRef, registerGrid };
@@ -169,16 +169,16 @@ export const useGroupSelectionHandler = (
   syncSelection: (
     arg:
       | (string | number)[]
-      | ((prev: (string | number)[]) => (string | number)[])
+      | ((prev: (string | number)[]) => (string | number)[]),
   ) => void,
-  setGroupLoading: (groupKey: any, isLoading: boolean) => void
+  setGroupLoading: (groupKey: any, isLoading: boolean) => void,
 ) => {
   return useCallback(
     async (
       groupKey: any,
       childKeys: any[],
       action: "select" | "deselect",
-      gridInstance: dxDataGrid
+      gridInstance: dxDataGrid,
     ) => {
       if (!gridInstance) return;
       setGroupLoading(groupKey, true);
@@ -189,15 +189,12 @@ export const useGroupSelectionHandler = (
         } else {
           await gridInstance.deselectRows(childKeys);
         }
-
-        const selectedKeys = await gridInstance.getSelectedRowKeys();
-        syncSelection(selectedKeys);
       } catch (error) {
         console.error("Group selection failed", error);
       } finally {
         setGroupLoading(groupKey, false);
       }
     },
-    [syncSelection, setGroupLoading]
+    [syncSelection, setGroupLoading],
   );
 };

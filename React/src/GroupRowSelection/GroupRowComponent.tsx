@@ -67,11 +67,11 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({
 
           setTimeout(() => {
             setBlocked(false);
-          }, 100);
-        }
+          }, 200);
+        },
       );
     },
-    [childKeys, gridInstance, handleGroupSelection, isLoading, row.key]
+    [childKeys, gridInstance, handleGroupSelection, isLoading, row.key],
   );
 
   useEffect(() => {
