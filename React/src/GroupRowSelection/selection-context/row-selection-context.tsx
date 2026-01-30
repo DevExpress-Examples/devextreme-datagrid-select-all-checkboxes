@@ -2,6 +2,7 @@ import React, { createContext, useContext, type ReactNode } from "react";
 import {
   useGridInstance,
   useGroupLoading,
+  useGroupRowHandler,
   useGroupSelectionHandler,
   useSelectedRows,
 } from "./hooks";
@@ -18,11 +19,15 @@ export const GroupRowSelectionProvider: React.FC<{ children: ReactNode }> = ({
   const { selectedRows, syncSelection } = useSelectedRows();
   const { gridInstanceRef, groupedColumnsRef, registerGrid } = useGridInstance(
     syncSelection,
-    hasAnyLoading
+    hasAnyLoading,
   );
   const handleGroupSelection = useGroupSelectionHandler(
     syncSelection,
-    setGroupLoading
+    setGroupLoading,
+  );
+  const { groupRowInit } = useGroupRowHandler(
+    gridInstanceRef,
+    groupedColumnsRef,
   );
 
   return (
@@ -37,6 +42,7 @@ export const GroupRowSelectionProvider: React.FC<{ children: ReactNode }> = ({
         setGroupLoading,
         handleGroupSelection,
         registerGrid,
+        initializeGroupRow: groupRowInit,
       }}
     >
       {children}
@@ -48,7 +54,7 @@ export const useGroupRowSelection = () => {
   const context = useContext(GroupRowSelectionContext);
   if (!context) {
     throw new Error(
-      "useGroupRowSelection must be used within GroupRowSelectionProvider"
+      "useGroupRowSelection must be used within GroupRowSelectionProvider",
     );
   }
   return context;

@@ -1,6 +1,11 @@
 import { useState, useCallback, useMemo, useRef } from "react";
 import { serializeKey } from "./helpers";
 import type dxDataGrid from "devextreme/ui/data_grid";
+import type { IGroupRowReadyParameter } from "../GroupRowComponent";
+import {
+  isItemsArray,
+  type LoadOptions,
+} from "devextreme-react/cjs/common/data";
 
 export const useSelectedRows = () => {
   const [selectedRows, setSelectedRows] = useState<Set<string | number>>(
@@ -137,7 +142,7 @@ export const useGridInstance = (
 
       grid.option("onOptionChanged", (e) => {
         if (e.fullName === "selectionFilter") {
-          const selectAllAction = e.value === null;
+          const selectAllAction = e.value === null || e.value.length === 0;
           const isDeselectAction =
             e.previousValue?.length > e.value?.length && e.value !== null;
 
@@ -198,3 +203,61 @@ export const useGroupSelectionHandler = (
     [syncSelection, setGroupLoading],
   );
 };
+
+export function useGroupRowHandler(
+  gridRef: React.RefObject<dxDataGrid>,
+  groupedColumnsRef: React.MutableRefObject<Record<string, any>[]>,
+) {
+  const groupChildKeysRef = useRef<Record<string, any>>({});
+
+  const calcCheckBoxId = useCallback(
+    (grid: dxDataGrid, groupRowKey: string[]) => {
+      return `${grid.element().id}groupCheckBox${groupRowKey.join("")}`;
+    },
+    [],
+  );
+
+  const groupRowInit = useCallback(
+    (arg: IGroupRowReadyParameter): Promise<any> => {
+      const grid = gridRef.current?.instance();
+      if (!grid) return Promise.resolve([]);
+
+      const checkBoxId = calcCheckBoxId(grid, arg.key);
+
+      return new Promise((resolve) => {
+        if (groupChildKeysRef.current[checkBoxId]) {
+          resolve(groupChildKeysRef.current[checkBoxId]);
+          return;
+        }
+
+        const filter: any[] = [];
+        arg.key.forEach((key, i) => {
+          filter.push([groupedColumnsRef.current[i].dataField, "=", key]);
+        });
+
+        const loadOptions: LoadOptions = { filter };
+        const store = grid.getDataSource().store();
+
+        store
+          .load(loadOptions)
+          .then((data) => {
+            if (isItemsArray(data)) {
+              const keys = data.map((d) => grid.keyOf(d));
+              groupChildKeysRef.current[checkBoxId] = keys;
+              resolve(keys);
+            } else {
+              resolve([]);
+            }
+          })
+          .catch(() => resolve([]));
+      });
+    },
+    [calcCheckBoxId],
+  );
+
+  return {
+    groupRowInit,
+    getChildRowKeys: (grid: dxDataGrid, key: string[]) =>
+      groupChildKeysRef.current[calcCheckBoxId(grid, key)],
+  };
+}

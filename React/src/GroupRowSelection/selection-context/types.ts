@@ -1,4 +1,5 @@
 import type dxDataGrid from "devextreme/ui/data_grid";
+import type { IGroupRowReadyParameter } from "../GroupRowComponent";
 
 export interface GroupRowSelectionContextType {
   selectedRows: Set<string | number>;
@@ -12,7 +13,8 @@ export interface GroupRowSelectionContextType {
     groupKey: any,
     childKeys: any[],
     action: "select" | "deselect",
-    gridInstance: dxDataGrid
+    gridInstance: dxDataGrid,
   ) => Promise<void>;
   registerGrid: (grid: dxDataGrid) => void;
+  initializeGroupRow: (e: IGroupRowReadyParameter) => Promise<string[]>;
 }

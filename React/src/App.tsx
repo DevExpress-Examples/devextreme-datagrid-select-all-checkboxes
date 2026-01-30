@@ -10,11 +10,8 @@ import DataGrid, {
 } from "devextreme-react/data-grid";
 import * as AspNetData from "devextreme-aspnet-data-nojquery";
 import { useEventCallback } from "./hooks";
-import { useGroupSelectionHelper } from "./GroupRowSelection/GroupRowSelectionHelper";
 import { useGroupRowSelection } from "./GroupRowSelection/selection-context/row-selection-context";
-import GroupRowComponent, {
-  type IGroupRowReadyParameter,
-} from "./GroupRowSelection/GroupRowComponent";
+import GroupRowComponent from "./GroupRowSelection/GroupRowComponent";
 
 import "./App.css";
 import "devextreme/dist/css/dx.material.blue.light.compact.css";
@@ -43,12 +40,7 @@ const shippersData = AspNetData.createStore({
 });
 
 function App(): JSX.Element {
-  const { groupRowInit } = useGroupSelectionHelper();
   const { registerGrid } = useGroupRowSelection();
-
-  const groupRowInitHandler = useEventCallback((arg: IGroupRowReadyParameter) =>
-    groupRowInit(arg)
-  );
 
   const handleInitialized = useCallback(
     (e: DataGridTypes.InitializedEvent) => {
@@ -56,16 +48,13 @@ function App(): JSX.Element {
 
       registerGrid(e.component);
     },
-    [registerGrid]
+    [registerGrid],
   );
 
   const groupCellRender = useEventCallback(
     (group: DataGridTypes.ColumnGroupCellTemplateData): JSX.Element => (
-      <GroupRowComponent
-        groupCellData={group}
-        onInitialized={groupRowInitHandler}
-      ></GroupRowComponent>
-    )
+      <GroupRowComponent groupCellData={group}></GroupRowComponent>
+    ),
   );
 
   return (

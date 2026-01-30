@@ -13,7 +13,6 @@ import "./GroupRowComponent.css";
 
 interface GroupRowProps {
   groupCellData: DataGridTypes.ColumnGroupCellTemplateData;
-  onInitialized: (param: IGroupRowReadyParameter) => Promise<any> | undefined;
 }
 
 export interface IGroupRowReadyParameter {
@@ -22,10 +21,18 @@ export interface IGroupRowReadyParameter {
 
 const iconSize = 18;
 
-const GroupRowComponent: React.FC<GroupRowProps> = ({
-  groupCellData,
-  onInitialized,
-}) => {
+const groupRowFlexStyle: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+};
+
+const groupSelectionFrontStyle: React.CSSProperties = {
+  marginRight: "10px",
+  width: iconSize,
+  height: iconSize,
+};
+
+const GroupRowComponent: React.FC<GroupRowProps> = ({ groupCellData }) => {
   const [childKeys, setChildKeys] = useState<any[]>([]);
   const [isInitializing, setIsInitializing] = useState(true);
   const actionInProgressRef = useRef(false);
@@ -35,6 +42,7 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({
     handleGroupSelection,
     isGroupLoading,
     setGroupLoading,
+    initializeGroupRow,
   } = useGroupRowSelection();
 
   const { component: gridInstance, row } = groupCellData;
@@ -74,30 +82,30 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({
     [childKeys, gridInstance, handleGroupSelection, isLoading, row.key],
   );
 
-  useEffect(() => {
-    let isMounted = true;
+  const onRowInitialized = useCallback(
+    (e: IGroupRowReadyParameter) => {
+      setIsInitializing(true);
 
-    setIsInitializing(true);
+      const promise = initializeGroupRow(e);
 
-    const promise = onInitialized({ key: row.key });
-
-    promise
-      ?.then((keys: any[]) => {
-        if (isMounted) {
+      promise
+        ?.then((keys: any[]) => {
           setChildKeys(keys);
-        }
-      })
-      .finally(() => {
-        if (isMounted) {
+        })
+        .finally(() => {
           setIsInitializing(false);
-        }
-      });
+        });
+    },
+    [initializeGroupRow],
+  );
+
+  useEffect(() => {
+    onRowInitialized({ key: row.key });
 
     return () => {
-      isMounted = false;
       setGroupLoading(row.key, false);
     };
-  }, [row.key, onInitialized, setGroupLoading]);
+  }, [row.key, initializeGroupRow, setGroupLoading]);
 
   const stopPropagation = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -118,15 +126,16 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({
 
   const showLoading = isInitializing || isLoading;
 
+  const groupTextStyleDynamic: React.CSSProperties = {
+    opacity: blocked ? 0.5 : 1,
+  };
+
   return (
-    <div
-      className="group-row-flex"
-      style={{ display: "flex", alignItems: "center" }}
-    >
+    <div className="group-row-flex" style={groupRowFlexStyle}>
       <div
         className="group-selection-front"
         onClick={stopPropagation}
-        style={{ marginRight: "10px", width: iconSize, height: iconSize }}
+        style={groupSelectionFrontStyle}
       >
         {showLoading ? (
           <LoadIndicator height={iconSize} width={iconSize} />
@@ -139,7 +148,7 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({
           />
         )}
       </div>
-      <span style={{ opacity: blocked ? 0.5 : 1 }}>{groupText}</span>
+      <span style={groupTextStyleDynamic}>{groupText}</span>
     </div>
   );
 };

@@ -10,7 +10,6 @@ import { GroupRowSelectionProvider } from "./GroupRowSelection/selection-context
 describe("GroupRowComponent", () => {
   const mockSelect = vi.fn(() => Promise.resolve());
   const mockDeselect = vi.fn(() => Promise.resolve());
-  const mockOnInitialized = vi.fn();
 
   const mockGroupData: DataGridTypes.ColumnGroupCellTemplateData = {
     column: { caption: "ShipCountry" },
@@ -29,11 +28,8 @@ describe("GroupRowComponent", () => {
   test("should render group text", () => {
     render(
       <GroupRowSelectionProvider>
-        <GroupRowComponent
-          groupCellData={mockGroupData}
-          onInitialized={mockOnInitialized}
-        />
-      </GroupRowSelectionProvider>
+        <GroupRowComponent groupCellData={mockGroupData} />
+      </GroupRowSelectionProvider>,
     );
     expect(screen.getByText("ShipCountry: USA")).toBeInTheDocument();
   });
@@ -42,7 +38,7 @@ describe("GroupRowComponent", () => {
     render(
       <GroupRowSelectionProvider>
         <App />
-      </GroupRowSelectionProvider>
+      </GroupRowSelectionProvider>,
     );
 
     await waitFor(
@@ -53,7 +49,7 @@ describe("GroupRowComponent", () => {
           expect(checkbox).toBeVisible();
         });
       },
-      { timeout: 5000 }
+      { timeout: 5000 },
     );
   });
 
@@ -61,7 +57,7 @@ describe("GroupRowComponent", () => {
     render(
       <GroupRowSelectionProvider>
         <App />
-      </GroupRowSelectionProvider>
+      </GroupRowSelectionProvider>,
     );
 
     const allCheckboxes = await waitFor(() => screen.getAllByRole("checkbox"), {
@@ -92,7 +88,7 @@ describe("GroupRowComponent", () => {
     const { container } = render(
       <GroupRowSelectionProvider>
         <App />
-      </GroupRowSelectionProvider>
+      </GroupRowSelectionProvider>,
     );
 
     const allCheckboxes = await waitFor(
@@ -101,7 +97,7 @@ describe("GroupRowComponent", () => {
         if (checkboxes.length < 10) throw new Error("Grid not loaded");
         return checkboxes;
       },
-      { timeout: 15000 }
+      { timeout: 15000 },
     );
 
     await user.click(allCheckboxes[1]);
@@ -146,7 +142,7 @@ describe("GroupRowComponent", () => {
           if (index > 1 && index <= 4) {
             if (state !== "true") {
               throw new Error(
-                `Row ${index} should be selected but was ${state}`
+                `Row ${index} should be selected but was ${state}`,
               );
             }
             return;
@@ -155,7 +151,7 @@ describe("GroupRowComponent", () => {
           expect(state).toBe("false");
         });
       },
-      { timeout: 10000 }
+      { timeout: 10000 },
     );
   }, 30000);
 });
