@@ -95,7 +95,8 @@ export const useGridInstance = (
   const groupedColumnsRef = useRef<Record<string, any>[]>([]);
 
   const latestRequestIdRef = useRef<number>(0);
-  const isFetchingRef = useRef<boolean>(false);
+
+  const prevSelectedRowsRef = useRef<Set<string | number>>(new Set());
 
   const collectGroupedColumns = useCallback((grid: dxDataGrid) => {
     return grid
@@ -110,19 +111,16 @@ export const useGridInstance = (
 
   const triggerFullSync = useCallback(
     (grid: dxDataGrid) => {
-      isFetchingRef.current = true;
       const currentId = ++latestRequestIdRef.current;
 
       getSelectedKeys(grid)
         .then((keys) => {
           if (latestRequestIdRef.current === currentId) {
             syncSelection(keys);
-            isFetchingRef.current = false;
           }
         })
         .catch(() => {
           if (latestRequestIdRef.current === currentId) {
-            isFetchingRef.current = false;
           }
         });
     },
@@ -141,22 +139,34 @@ export const useGridInstance = (
       const defaultOptionChanged = grid.option("onOptionChanged");
 
       grid.option("onOptionChanged", (e) => {
+        if (!prevSelectedRowsRef?.current) return;
+
         if (e.fullName === "selectionFilter") {
           const selectAllAction = e.value === null || e.value.length === 0;
           const isDeselectAction =
-            e.previousValue?.length > e.value?.length && e.value !== null;
+            (prevSelectedRowsRef?.current.size ?? 0) >
+              e.value?.filter((v: any) => Array.isArray(v))?.length &&
+            e.value !== null;
 
-          if (isDeselectAction) syncSelection(e.value);
+          if (isDeselectAction)
+            syncSelection((prev) =>
+              Array.from(prev).filter((key) =>
+                e.value.some((v: any) =>
+                  Array.isArray(v) ? v.includes(key) : v === key,
+                ),
+              ),
+            );
 
           if (selectAllAction) {
             triggerFullSync(grid);
           } else {
-            if (!hasAnyLoading) {
+            if (!hasAnyLoading && !isDeselectAction) {
               grid.getSelectedRowKeys().then((selectedKeys) => {
                 syncSelection(selectedKeys);
               });
             }
           }
+          prevSelectedRowsRef.current = new Set(e.value);
         }
         if (e.fullName.includes("groupIndex")) {
           groupedColumnsRef.current = collectGroupedColumns(grid);
@@ -171,11 +181,6 @@ export const useGridInstance = (
 };
 
 export const useGroupSelectionHandler = (
-  syncSelection: (
-    arg:
-      | (string | number)[]
-      | ((prev: (string | number)[]) => (string | number)[]),
-  ) => void,
   setGroupLoading: (groupKey: any, isLoading: boolean) => void,
 ) => {
   return useCallback(
@@ -200,7 +205,7 @@ export const useGroupSelectionHandler = (
         setGroupLoading(groupKey, false);
       }
     },
-    [syncSelection, setGroupLoading],
+    [setGroupLoading],
   );
 };
 

@@ -21,10 +21,7 @@ export const GroupRowSelectionProvider: React.FC<{ children: ReactNode }> = ({
     syncSelection,
     hasAnyLoading,
   );
-  const handleGroupSelection = useGroupSelectionHandler(
-    syncSelection,
-    setGroupLoading,
-  );
+  const handleGroupSelection = useGroupSelectionHandler(setGroupLoading);
   const { groupRowInit } = useGroupRowHandler(
     gridInstanceRef,
     groupedColumnsRef,
