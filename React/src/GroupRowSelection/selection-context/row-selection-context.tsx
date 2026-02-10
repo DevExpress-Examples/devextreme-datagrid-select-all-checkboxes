@@ -1,20 +1,23 @@
-import React, { createContext, useContext, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useMemo,
+  type ReactNode,
+} from 'react';
 import {
   useGridInstance,
   useGroupLoading,
   useGroupRowHandler,
   useGroupSelectionHandler,
   useSelectedRows,
-} from "./hooks";
-import type { GroupRowSelectionContextType } from "./types";
+} from './hooks';
+import type { GroupRowSelectionContextType } from './types';
 
 const GroupRowSelectionContext = createContext<
-  GroupRowSelectionContextType | undefined
+GroupRowSelectionContextType | undefined
 >(undefined);
 
-export const GroupRowSelectionProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+export function GroupRowSelectionProvider({ children }: { children: ReactNode }): JSX.Element {
   const { setGroupLoading, isGroupLoading, hasAnyLoading } = useGroupLoading();
   const { selectedRows, syncSelection } = useSelectedRows();
   const { gridInstanceRef, groupedColumnsRef, registerGrid } = useGridInstance(
@@ -27,32 +30,48 @@ export const GroupRowSelectionProvider: React.FC<{ children: ReactNode }> = ({
     groupedColumnsRef,
   );
 
+  const contextValue = useMemo<GroupRowSelectionContextType>(
+    () => ({
+      selectedRows,
+      gridInstanceRef,
+      groupedColumnsRef,
+      hasAnyLoading,
+      syncSelection,
+      isGroupLoading,
+      setGroupLoading,
+      handleGroupSelection,
+      registerGrid,
+      initializeGroupRow: groupRowInit,
+    }),
+    [
+      selectedRows,
+      gridInstanceRef,
+      groupedColumnsRef,
+      hasAnyLoading,
+      syncSelection,
+      isGroupLoading,
+      setGroupLoading,
+      handleGroupSelection,
+      registerGrid,
+      groupRowInit,
+    ],
+  );
+
   return (
     <GroupRowSelectionContext.Provider
-      value={{
-        selectedRows,
-        gridInstanceRef,
-        groupedColumnsRef,
-        hasAnyLoading,
-        syncSelection,
-        isGroupLoading,
-        setGroupLoading,
-        handleGroupSelection,
-        registerGrid,
-        initializeGroupRow: groupRowInit,
-      }}
+      value={contextValue}
     >
       {children}
     </GroupRowSelectionContext.Provider>
   );
-};
+}
 
-export const useGroupRowSelection = () => {
+export function useGroupRowSelection(): GroupRowSelectionContextType {
   const context = useContext(GroupRowSelectionContext);
   if (!context) {
     throw new Error(
-      "useGroupRowSelection must be used within GroupRowSelectionProvider",
+      'useGroupRowSelection must be used within GroupRowSelectionProvider',
     );
   }
   return context;
-};
+}

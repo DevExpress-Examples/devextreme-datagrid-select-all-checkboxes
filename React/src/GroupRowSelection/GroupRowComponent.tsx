@@ -4,12 +4,12 @@ import React, {
   useState,
   useCallback,
   useRef,
-} from "react";
-import { useGroupRowSelection } from "./selection-context/row-selection-context";
-import CheckBox, { type CheckBoxTypes } from "devextreme-react/check-box";
-import { LoadIndicator } from "devextreme-react";
-import { type DataGridTypes } from "devextreme-react/data-grid";
-import "./GroupRowComponent.css";
+} from 'react';
+import CheckBox, { type CheckBoxTypes } from 'devextreme-react/check-box';
+import { LoadIndicator } from 'devextreme-react';
+import { type DataGridTypes } from 'devextreme-react/data-grid';
+import { useGroupRowSelection } from './selection-context/row-selection-context';
+import './GroupRowComponent.css';
 
 interface GroupRowProps {
   groupCellData: DataGridTypes.ColumnGroupCellTemplateData;
@@ -22,17 +22,17 @@ export interface IGroupRowReadyParameter {
 const iconSize = 18;
 
 const groupRowFlexStyle: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
+  display: 'flex',
+  alignItems: 'center',
 };
 
 const groupSelectionFrontStyle: React.CSSProperties = {
-  marginRight: "10px",
+  marginRight: '10px',
   width: iconSize,
   height: iconSize,
 };
 
-const GroupRowComponent: React.FC<GroupRowProps> = ({ groupCellData }) => {
+function GroupRowComponent({ groupCellData }: GroupRowProps): JSX.Element {
   const [childKeys, setChildKeys] = useState<any[]>([]);
   const [isInitializing, setIsInitializing] = useState(true);
   const actionInProgressRef = useRef(false);
@@ -68,7 +68,7 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({ groupCellData }) => {
       actionInProgressRef.current = true;
 
       setBlocked(true);
-      const action = e.value ? "select" : "deselect";
+      const action = e.value ? 'select' : 'deselect';
       handleGroupSelection(row.key, childKeys, action, gridInstance).finally(
         () => {
           actionInProgressRef.current = false;
@@ -99,10 +99,10 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({ groupCellData }) => {
     [initializeGroupRow],
   );
 
-  useEffect(() => {
+  useEffect((): (() => void) => {
     onRowInitialized({ key: row.key });
 
-    return () => {
+    return (): void => {
       setGroupLoading(row.key, false);
     };
   }, [row.key, initializeGroupRow, setGroupLoading]);
@@ -151,6 +151,6 @@ const GroupRowComponent: React.FC<GroupRowProps> = ({ groupCellData }) => {
       <span style={groupTextStyleDynamic}>{groupText}</span>
     </div>
   );
-};
+}
 
 export default React.memo(GroupRowComponent);

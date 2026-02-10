@@ -1,24 +1,28 @@
-import { useState, useCallback, useMemo, useRef } from "react";
-import { serializeKey } from "./helpers";
-import type dxDataGrid from "devextreme/ui/data_grid";
-import type { IGroupRowReadyParameter } from "../GroupRowComponent";
+import {
+  useState, useCallback, useMemo, useRef,
+} from 'react';
+import type dxDataGrid from 'devextreme/ui/data_grid';
 import {
   isItemsArray,
   type LoadOptions,
-} from "devextreme-react/cjs/common/data";
+} from 'devextreme-react/cjs/common/data';
+import { serializeKey } from './helpers';
+import type {
+  UseGridInstanceReturnType,
+  UseGroupLoadingReturnType,
+  UseGroupRowHandlerReturnType,
+  UseGroupSelectionHandlerReturnType,
+  UseSelectedRowsReturnType,
+} from './types';
 
-export const useSelectedRows = () => {
+export function useSelectedRows(): UseSelectedRowsReturnType {
   const [selectedRows, setSelectedRows] = useState<Set<string | number>>(
     new Set(),
   );
 
-  const syncSelection = useCallback(
-    (
-      arg:
-        | (string | number)[]
-        | ((prevSelectedRows: (string | number)[]) => (string | number)[]),
-    ) => {
-      if (typeof arg === "function") {
+  const syncSelection = useCallback<UseSelectedRowsReturnType['syncSelection']>(
+    (arg) => {
+      if (typeof arg === 'function') {
         setSelectedRows((prev) => {
           const newRowIds = arg(Array.from(prev));
           return new Set(newRowIds);
@@ -31,9 +35,9 @@ export const useSelectedRows = () => {
   );
 
   return { selectedRows, syncSelection };
-};
+}
 
-export const useGroupLoading = () => {
+export function useGroupLoading(): UseGroupLoadingReturnType {
   const [loadingGroupKeys, setLoadingGroupKeys] = useState<Map<string, number>>(
     () => new Map(),
   );
@@ -44,8 +48,9 @@ export const useGroupLoading = () => {
       const next = new Map(prev);
       const current = next.get(sKey) ?? 0;
 
-      if (isLoading) next.set(sKey, current + 1);
-      else {
+      if (isLoading) {
+        next.set(sKey, current + 1);
+      } else {
         const nextCount = current - 1;
         if (nextCount <= 0) next.delete(sKey);
         else next.set(sKey, nextCount);
@@ -81,33 +86,31 @@ export const useGroupLoading = () => {
   );
 
   return { setGroupLoading, isGroupLoading, hasAnyLoading };
-};
+}
 
-export const useGridInstance = (
-  syncSelection: (
-    keys:
-      | (string | number)[]
-      | ((prev: (string | number)[]) => (string | number)[]),
-  ) => void,
+export function useGridInstance(
+  syncSelection: UseSelectedRowsReturnType['syncSelection'],
   hasAnyLoading?: boolean,
-) => {
-  const gridInstanceRef = useRef<dxDataGrid<any, any> | null>(null);
+): UseGridInstanceReturnType {
+  const gridInstanceRef = useRef<dxDataGrid | null>(null);
   const groupedColumnsRef = useRef<Record<string, any>[]>([]);
 
   const latestRequestIdRef = useRef<number>(0);
 
   const prevSelectedRowsRef = useRef<Set<string | number>>(new Set());
 
-  const collectGroupedColumns = useCallback((grid: dxDataGrid) => {
-    return grid
+  const collectGroupedColumns = useCallback(
+    (grid: dxDataGrid) => grid
       .getVisibleColumns()
       .filter((c) => c.groupIndex != null && c.groupIndex >= 0)
-      .sort((a, b) => (a.groupIndex! > b.groupIndex! ? 1 : -1));
-  }, []);
+      .sort((a, b) => ((a.groupIndex ?? 0) > (b.groupIndex ?? 0) ? 1 : -1)),
+    [],
+  );
 
-  const getSelectedKeys = useCallback((grid: dxDataGrid) => {
-    return grid.getSelectedRowKeys();
-  }, []);
+  const getSelectedKeys = useCallback(
+    (grid: dxDataGrid) => grid.getSelectedRowKeys(),
+    [],
+  );
 
   const triggerFullSync = useCallback(
     (grid: dxDataGrid) => {
@@ -119,10 +122,7 @@ export const useGridInstance = (
             syncSelection(keys);
           }
         })
-        .catch(() => {
-          if (latestRequestIdRef.current === currentId) {
-          }
-        });
+        .catch(() => {});
     },
     [getSelectedKeys, syncSelection],
   );
@@ -136,39 +136,29 @@ export const useGridInstance = (
         .then((keys: (string | number)[]) => syncSelection(keys))
         .catch(() => {});
 
-      const defaultOptionChanged = grid.option("onOptionChanged");
+      const defaultOptionChanged = grid.option('onOptionChanged');
 
-      grid.option("onOptionChanged", (e) => {
+      grid.option('onOptionChanged', (e) => {
         if (!prevSelectedRowsRef?.current) return;
 
-        if (e.fullName === "selectionFilter") {
+        if (e.fullName === 'selectionFilter') {
           const selectAllAction = e.value === null || e.value.length === 0;
-          const isDeselectAction =
-            (prevSelectedRowsRef?.current.size ?? 0) >
-              e.value?.filter((v: any) => Array.isArray(v))?.length &&
-            e.value !== null;
+          const isDeselectAction = (prevSelectedRowsRef?.current.size ?? 0)
+              > e.value?.filter((v: any) => Array.isArray(v))?.length
+            && e.value !== null;
 
-          if (isDeselectAction)
-            syncSelection((prev) =>
-              Array.from(prev).filter((key) =>
-                e.value.some((v: any) =>
-                  Array.isArray(v) ? v.includes(key) : v === key,
-                ),
-              ),
-            );
+          if (isDeselectAction) syncSelection((prev) => Array.from(prev).filter((key) => e.value.some((v: any) => (Array.isArray(v) ? v.includes(key) : v === key))));
 
           if (selectAllAction) {
             triggerFullSync(grid);
-          } else {
-            if (!hasAnyLoading && !isDeselectAction) {
-              grid.getSelectedRowKeys().then((selectedKeys) => {
-                syncSelection(selectedKeys);
-              });
-            }
+          } else if (!hasAnyLoading && !isDeselectAction) {
+            grid.getSelectedRowKeys().then((selectedKeys) => {
+              syncSelection(selectedKeys);
+            }).catch(() => {});
           }
           prevSelectedRowsRef.current = new Set(e.value);
         }
-        if (e.fullName.includes("groupIndex")) {
+        if (e.fullName.includes('groupIndex')) {
           groupedColumnsRef.current = collectGroupedColumns(grid);
         }
         defaultOptionChanged?.(e);
@@ -178,52 +168,52 @@ export const useGridInstance = (
   );
 
   return { gridInstanceRef, groupedColumnsRef, registerGrid };
-};
+}
 
-export const useGroupSelectionHandler = (
-  setGroupLoading: (groupKey: any, isLoading: boolean) => void,
-) => {
-  return useCallback(
-    async (
-      groupKey: any,
-      childKeys: any[],
-      action: "select" | "deselect",
-      gridInstance: dxDataGrid,
+export function useGroupSelectionHandler(
+  setGroupLoading: UseGroupLoadingReturnType['setGroupLoading'],
+): UseGroupSelectionHandlerReturnType {
+  return useCallback<UseGroupSelectionHandlerReturnType>(
+    // eslint-disable-next-line @typescript-eslint/space-before-function-paren
+    async(
+      groupKey,
+      childKeys,
+      action,
+      gridInstance,
     ) => {
       if (!gridInstance) return;
       setGroupLoading(groupKey, true);
 
       try {
-        if (action === "select") {
+        if (action === 'select') {
           await gridInstance.selectRows(childKeys, true);
         } else {
           await gridInstance.deselectRows(childKeys);
         }
       } catch (error) {
-        console.error("Group selection failed", error);
+        // eslint-disable-next-line no-console
+        console.error('Group selection failed', error);
       } finally {
         setGroupLoading(groupKey, false);
       }
     },
     [setGroupLoading],
   );
-};
+}
 
 export function useGroupRowHandler(
   gridRef: React.RefObject<dxDataGrid>,
   groupedColumnsRef: React.MutableRefObject<Record<string, any>[]>,
-) {
+): UseGroupRowHandlerReturnType {
   const groupChildKeysRef = useRef<Record<string, any>>({});
 
   const calcCheckBoxId = useCallback(
-    (grid: dxDataGrid, groupRowKey: string[]) => {
-      return `${grid.element().id}groupCheckBox${groupRowKey.join("")}`;
-    },
+    (grid: dxDataGrid, groupRowKey: string[]) => `${grid.element().id}groupCheckBox${groupRowKey.join('')}`,
     [],
   );
 
-  const groupRowInit = useCallback(
-    (arg: IGroupRowReadyParameter): Promise<any> => {
+  const groupRowInit = useCallback<UseGroupRowHandlerReturnType['groupRowInit']>(
+    (arg) => {
       const grid = gridRef.current?.instance();
       if (!grid) return Promise.resolve([]);
 
@@ -235,9 +225,9 @@ export function useGroupRowHandler(
           return;
         }
 
-        const filter: any[] = [];
+        const filter: string[][] = [];
         arg.key.forEach((key, i) => {
-          filter.push([groupedColumnsRef.current[i].dataField, "=", key]);
+          filter.push([groupedColumnsRef.current[i].dataField, '=', key]);
         });
 
         const loadOptions: LoadOptions = { filter };
@@ -247,7 +237,7 @@ export function useGroupRowHandler(
           .load(loadOptions)
           .then((data) => {
             if (isItemsArray(data)) {
-              const keys = data.map((d) => grid.keyOf(d));
+              const keys: number[] = data.map((d) => grid.keyOf(d) as number);
               groupChildKeysRef.current[checkBoxId] = keys;
               resolve(keys);
             } else {
@@ -262,7 +252,5 @@ export function useGroupRowHandler(
 
   return {
     groupRowInit,
-    getChildRowKeys: (grid: dxDataGrid, key: string[]) =>
-      groupChildKeysRef.current[calcCheckBoxId(grid, key)],
   };
 }

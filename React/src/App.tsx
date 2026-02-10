@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback } from 'react';
 import DataGrid, {
   Column,
   type DataGridTypes,
@@ -7,32 +7,32 @@ import DataGrid, {
   Lookup,
   Paging,
   Selection,
-} from "devextreme-react/data-grid";
-import * as AspNetData from "devextreme-aspnet-data-nojquery";
-import { useEventCallback } from "./hooks";
-import { useGroupRowSelection } from "./GroupRowSelection/selection-context/row-selection-context";
-import GroupRowComponent from "./GroupRowSelection/GroupRowComponent";
+} from 'devextreme-react/data-grid';
+import * as AspNetData from 'devextreme-aspnet-data-nojquery';
+import { useEventCallback } from './hooks';
+import { useGroupRowSelection } from './GroupRowSelection/selection-context/row-selection-context';
+import GroupRowComponent from './GroupRowSelection/GroupRowComponent';
 
-import "./App.css";
-import "devextreme/dist/css/dx.material.blue.light.compact.css";
+import './App.css';
+import 'devextreme/dist/css/dx.material.blue.light.compact.css';
 
-const url = "https://js.devexpress.com/Demos/NetCore/api/DataGridWebApi";
+const url = 'https://js.devexpress.com/Demos/NetCore/api/DataGridWebApi';
 const dataSource = AspNetData.createStore({
-  key: "OrderID",
+  key: 'OrderID',
   loadUrl: `${url}/Orders`,
   onBeforeSend(_method, ajaxOptions) {
     ajaxOptions.xhrFields = { withCredentials: true };
   },
 });
 const customersData = AspNetData.createStore({
-  key: "Value",
+  key: 'Value',
   loadUrl: `${url}/CustomersLookup`,
   onBeforeSend(_method, ajaxOptions) {
     ajaxOptions.xhrFields = { withCredentials: true };
   },
 });
 const shippersData = AspNetData.createStore({
-  key: "Value",
+  key: 'Value',
   loadUrl: `${url}/ShippersLookup`,
   onBeforeSend(_method, ajaxOptions) {
     ajaxOptions.xhrFields = { withCredentials: true };
