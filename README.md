@@ -30,7 +30,7 @@ DataGrid may query all data when selecting a group row with many data records. Y
 - **React**
     - [App.tsx](React/src/App.tsx)
     - [GroupRowComponent.tsx](React/src/GroupRowSelection//GroupRowComponent.tsx) 
-    - [GroupRowSelectionHelper.tsx](React/src/GroupRowSelection/GroupRowSelectionHelper.tsx)
+    - [hooks.ts](React/src/GroupRowSelection/selection-context/hooks.ts)
 - **Vue**
     - [Home.vue](Vue/src/components/HomeContent.vue)
     - [GroupRowComponent.vue](Vue/src/components/GroupRowSelection/GroupRowComponent.vue)
