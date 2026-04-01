@@ -56,7 +56,6 @@ export default class GroupSelectionHelper {
       const store = this.grid.getDataSource().store();
       store.load(loadOptions).then((data) => {
         if (isItemsArray(data)) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           this.groupChildKeys[checkBoxId] = data.map((d) => this.grid.keyOf(d));
           this.getSelectedKeys(this.grid).then((selectedKeys) => {
             const checkedState: boolean | undefined = this.areKeysSelected(this.groupChildKeys[checkBoxId], selectedKeys);
@@ -116,7 +115,6 @@ export default class GroupSelectionHelper {
   }
 
   getChildRowKeys(grid: dxDataGrid, groupRowKey: string[]): any[] {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.groupChildKeys[this.calcCheckBoxId(grid, groupRowKey) as any];
   }
 

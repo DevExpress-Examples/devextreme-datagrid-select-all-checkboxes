@@ -12,7 +12,6 @@ $(() => {
 
   $('#grid').dxDataGrid({
     onInitialized(e) {
-      // eslint-disable-next-line no-new
       new GroupSelectionBehavior(e.component);
     },
     remoteOperations: true,

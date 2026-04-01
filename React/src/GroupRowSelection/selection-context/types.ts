@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import type dxDataGrid from 'devextreme/ui/data_grid';
 import type { IGroupRowReadyParameter } from '../GroupRowComponent';
 

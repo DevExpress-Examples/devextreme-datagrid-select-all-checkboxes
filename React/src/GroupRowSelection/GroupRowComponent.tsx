@@ -107,7 +107,7 @@ function GroupRowComponent({ groupCellData }: GroupRowProps): JSX.Element {
     };
   }, [row.key, initializeGroupRow, setGroupLoading]);
 
-  const stopPropagation = useCallback((e: React.MouseEvent) => {
+  const stopPropagation = useCallback((e: React.SyntheticEvent) => {
     e.stopPropagation();
   }, []);
 
@@ -134,7 +134,9 @@ function GroupRowComponent({ groupCellData }: GroupRowProps): JSX.Element {
     <div className="group-row-flex" style={groupRowFlexStyle}>
       <div
         className="group-selection-front"
+        role="presentation"
         onClick={stopPropagation}
+        onKeyDown={stopPropagation}
         style={groupSelectionFrontStyle}
       >
         {showLoading ? (

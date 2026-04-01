@@ -174,8 +174,7 @@ export function useGroupSelectionHandler(
   setGroupLoading: UseGroupLoadingReturnType['setGroupLoading'],
 ): UseGroupSelectionHandlerReturnType {
   return useCallback<UseGroupSelectionHandlerReturnType>(
-    // eslint-disable-next-line @typescript-eslint/space-before-function-paren
-    async(
+    async (
       groupKey,
       childKeys,
       action,

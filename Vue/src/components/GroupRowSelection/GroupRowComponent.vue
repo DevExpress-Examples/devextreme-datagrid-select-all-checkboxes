@@ -56,7 +56,7 @@ function groupText():string {
         v-if="!boundLoading"
         :icon-size="iconSize"
         :value="boundCheck"
-        @valueChanged="checkBoxValueChanged"
+        @value-changed="checkBoxValueChanged"
       />
     </div>
     <span>{{ groupText() }}</span>
