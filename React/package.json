@@ -14,10 +14,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "devextreme": "^25.2.3",
+    "devextreme": "25.2.3",
     "devextreme-aspnet-data-nojquery": "^5.1.0",
     "devextreme-dist": "^25.2.3",
-    "devextreme-react": "^25.2.3",
+    "devextreme-react": "25.2.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
