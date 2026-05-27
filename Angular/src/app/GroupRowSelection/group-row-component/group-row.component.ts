@@ -3,12 +3,15 @@ import {
 } from '@angular/core';
 import type { DxCheckBoxTypes } from 'devextreme-angular/ui/check-box';
 import type { DxDataGridTypes } from 'devextreme-angular/ui/data-grid';
+import { DxDataGridModule } from 'devextreme-angular/ui/data-grid';
+import { DxLoadIndicatorModule } from 'devextreme-angular/ui/load-indicator';
+import { DxCheckBoxModule } from 'devextreme-angular/ui/check-box';
 
 @Component({
   selector: 'group-row-selectable',
+  imports: [DxDataGridModule, DxLoadIndicatorModule, DxCheckBoxModule],
   templateUrl: './group-row.component.html',
   styleUrls: ['./group-row.component.css'],
-  standalone: false,
 })
 export class GroupRowComponent implements AfterViewInit {
   @Input() groupCellData!: DxDataGridTypes.ColumnGroupCellTemplateData;

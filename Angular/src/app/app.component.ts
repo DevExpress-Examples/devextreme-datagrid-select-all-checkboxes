@@ -1,15 +1,18 @@
 import { Component, ViewChild } from '@angular/core';
 import * as AspNetData from 'devextreme-aspnet-data-nojquery';
-import { DxDataGridComponent } from 'devextreme-angular/ui/data-grid';
+import {DxDataGridComponent, DxDataGridModule} from 'devextreme-angular/ui/data-grid';
 import type { IGroupRowReadyParameter } from './GroupRowSelection/group-row-component/group-row.component';
 import GroupSelectionHelper from './GroupRowSelection/GroupRowSelectionHelper';
 import { localData } from './localdata';
+import { DxLoadIndicatorModule } from 'devextreme-angular/ui/load-indicator';
+import { DxCheckBoxModule } from 'devextreme-angular/ui/check-box';
+import { GroupRowComponent } from './GroupRowSelection/group-row-component/group-row.component';
 
 @Component({
   selector: 'app-root',
+  imports: [DxDataGridModule, DxLoadIndicatorModule, DxCheckBoxModule, GroupRowComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  standalone: false,
 })
 export class AppComponent {
   dataSource: AspNetData.CustomStore;
