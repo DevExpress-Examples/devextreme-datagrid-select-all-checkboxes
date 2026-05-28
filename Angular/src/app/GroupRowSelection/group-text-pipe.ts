@@ -3,7 +3,7 @@ import type { DxDataGridTypes } from 'devextreme-angular/ui/data-grid';
 
 @Pipe({
   name: 'groupText',
-  standalone: false,
+  standalone: true,
 })
 export class GroupTextPipe implements PipeTransform {
   transform(value: DxDataGridTypes.ColumnGroupCellTemplateData): string {

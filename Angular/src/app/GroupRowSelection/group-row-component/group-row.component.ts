@@ -6,10 +6,11 @@ import type { DxDataGridTypes } from 'devextreme-angular/ui/data-grid';
 import { DxDataGridModule } from 'devextreme-angular/ui/data-grid';
 import { DxLoadIndicatorModule } from 'devextreme-angular/ui/load-indicator';
 import { DxCheckBoxModule } from 'devextreme-angular/ui/check-box';
+import { GroupTextPipe } from '../group-text-pipe';
 
 @Component({
   selector: 'group-row-selectable',
-  imports: [DxDataGridModule, DxLoadIndicatorModule, DxCheckBoxModule],
+  imports: [DxDataGridModule, DxLoadIndicatorModule, DxCheckBoxModule, GroupTextPipe],
   templateUrl: './group-row.component.html',
   styleUrls: ['./group-row.component.css'],
 })

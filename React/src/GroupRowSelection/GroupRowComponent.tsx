@@ -8,7 +8,7 @@ import React, {
 import CheckBox, { type CheckBoxTypes } from 'devextreme-react/check-box';
 import { LoadIndicator } from 'devextreme-react';
 import { type DataGridTypes } from 'devextreme-react/data-grid';
-import { useGroupRowSelection } from './selection-context/row-selection-context';
+import { useGroupRowSelection } from './selection-context/row-selection-context.tsx';
 import './GroupRowComponent.css';
 
 interface GroupRowProps {

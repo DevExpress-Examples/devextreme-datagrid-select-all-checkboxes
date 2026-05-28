@@ -10,8 +10,8 @@ import DataGrid, {
 } from 'devextreme-react/data-grid';
 import * as AspNetData from 'devextreme-aspnet-data-nojquery';
 import { useEventCallback } from './hooks';
-import { useGroupRowSelection } from './GroupRowSelection/selection-context/row-selection-context';
-import GroupRowComponent from './GroupRowSelection/GroupRowComponent';
+import { useGroupRowSelection } from './GroupRowSelection/selection-context/row-selection-context.tsx';
+import GroupRowComponent from './GroupRowSelection/GroupRowComponent.tsx';
 
 import './App.css';
 import 'devextreme/dist/css/dx.material.blue.light.compact.css';
