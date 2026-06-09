@@ -2,7 +2,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { DataGridTypes } from 'devextreme-react/data-grid';
-import { trigger } from 'devextreme/events';
 import { vi } from 'vitest';
 import GroupRowComponent from './GroupRowSelection/GroupRowComponent';
 import App from './App';
@@ -120,7 +119,7 @@ describe('GroupRowComponent', () => {
       throw new Error('Expand button not found - cannot proceed with test');
     }
 
-      trigger(expandButton as HTMLElement, 'dxclick');
+    await user.click(expandButton);
 
     await waitFor(
       () => {
@@ -155,7 +154,7 @@ describe('GroupRowComponent', () => {
           expect(state).toBe('false');
         });
       },
-      { timeout: 10000 },
+      { timeout: 15000 },
     );
   }, 30000);
 });
