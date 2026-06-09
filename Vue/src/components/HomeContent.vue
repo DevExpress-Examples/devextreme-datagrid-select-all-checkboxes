@@ -71,7 +71,7 @@ function initGroupRow(arg: IGroupRowReadyParameter): Promise<any> {
         />
       </template>
       <DxSelection
-        :deferred="true"
+        :deferred="false"
         mode="multiple"
         :allow-select-all="true"
         show-check-boxes-mode="always"

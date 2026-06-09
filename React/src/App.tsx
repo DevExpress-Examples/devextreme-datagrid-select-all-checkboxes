@@ -69,7 +69,7 @@ function App(): JSX.Element {
         onInitialized={handleInitialized}
       >
         <Selection
-          deferred
+          deferred={false}
           allowSelectAll
           mode="multiple"
           showCheckBoxesMode="always"

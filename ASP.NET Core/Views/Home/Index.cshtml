@@ -10,7 +10,7 @@
     .OnInitialized("(e) => { helper.init(e.component); }")
     .Selection(s => 
         s.Mode(SelectionMode.Multiple)
-        .Deferred(true)
+        .Deferred(false)
         .AllowSelectAll(true)
         .ShowCheckBoxesMode(GridSelectionShowCheckBoxesMode.Always)
     )

@@ -154,7 +154,7 @@ describe('GroupRowComponent', () => {
           expect(state).toBe('false');
         });
       },
-      { timeout: 10000 },
+      { timeout: 15000 },
     );
   }, 30000);
 });

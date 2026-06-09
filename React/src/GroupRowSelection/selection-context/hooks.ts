@@ -108,7 +108,7 @@ export function useGridInstance(
   );
 
   const getSelectedKeys = useCallback(
-    (grid: dxDataGrid) => grid.getSelectedRowKeys(),
+    (grid: dxDataGrid) => Promise.resolve(grid.getSelectedRowKeys()),
     [],
   );
 
@@ -141,7 +141,9 @@ export function useGridInstance(
       grid.option('onOptionChanged', (e) => {
         if (!prevSelectedRowsRef?.current) return;
 
-        if (e.fullName === 'selectionFilter') {
+        if (e.fullName === 'selectedRowKeys') {
+          syncSelection(e.value ?? []);
+        } else if (e.fullName === 'selectionFilter') {
           const selectAllAction = e.value === null || e.value.length === 0;
           const isDeselectAction = (prevSelectedRowsRef?.current.size ?? 0)
               > e.value?.filter((v: any) => Array.isArray(v))?.length
@@ -152,7 +154,7 @@ export function useGridInstance(
           if (selectAllAction) {
             triggerFullSync(grid);
           } else if (!hasAnyLoading && !isDeselectAction) {
-            grid.getSelectedRowKeys().then((selectedKeys) => {
+            Promise.resolve(grid.getSelectedRowKeys()).then((selectedKeys) => {
               syncSelection(selectedKeys);
             }).catch(() => {});
           }
