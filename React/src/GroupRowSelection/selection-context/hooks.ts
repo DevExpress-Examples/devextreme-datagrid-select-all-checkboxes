@@ -190,7 +190,6 @@ export function useGroupSelectionHandler(
           await gridInstance.deselectRows(childKeys);
         }
       } catch (error) {
-        // eslint-disable-next-line no-console
         console.error('Group selection failed', error);
       } finally {
         setGroupLoading(groupKey, false);
