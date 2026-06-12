@@ -1,5 +1,6 @@
 import {
   Component, Input, Output, EventEmitter, AfterViewInit,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import type { DxCheckBoxTypes } from 'devextreme-angular/ui/check-box';
 import type { DxDataGridTypes } from 'devextreme-angular/ui/data-grid';
@@ -12,6 +13,7 @@ import { GroupTextPipe } from '../group-text-pipe';
   selector: 'group-row-selectable',
   imports: [DxDataGridModule, DxLoadIndicatorModule, DxCheckBoxModule, GroupTextPipe],
   templateUrl: './group-row.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./group-row.component.css'],
 })
 export class GroupRowComponent implements AfterViewInit {

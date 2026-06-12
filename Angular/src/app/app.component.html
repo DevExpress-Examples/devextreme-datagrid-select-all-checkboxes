@@ -10,7 +10,11 @@
     <div *dxTemplate="let group of 'groupCellTemplate'">
       <group-row-selectable
         [groupCellData]="group"
-        [childRowKeys]="helper?.getChildRowKeys(group.component, group.key)"
+        [childRowKeys]="
+          $safeNavigationMigration(
+            helper?.getChildRowKeys(group.component, group.key)
+          )
+        "
         (onInitialized)="groupRowInit($event)"
       >
       </group-row-selectable>

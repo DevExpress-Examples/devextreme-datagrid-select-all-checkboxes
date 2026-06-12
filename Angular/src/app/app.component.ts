@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import * as AspNetData from 'devextreme-aspnet-data-nojquery';
 import {DxDataGridComponent, DxDataGridModule} from 'devextreme-angular/ui/data-grid';
 import type { IGroupRowReadyParameter } from './GroupRowSelection/group-row-component/group-row.component';
@@ -12,6 +12,7 @@ import { GroupRowComponent } from './GroupRowSelection/group-row-component/group
   selector: 'app-root',
   imports: [DxDataGridModule, DxLoadIndicatorModule, DxCheckBoxModule, GroupRowComponent],
   templateUrl: './app.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
