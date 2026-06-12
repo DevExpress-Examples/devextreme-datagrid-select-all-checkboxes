@@ -28,5 +28,10 @@
     "devextreme-aspnet-data": "^5.1.0",
     "devextreme-dist": "26.1.2-beta",
     "jquery": "^3.7.1"
+  },
+  "overrides": {
+    "devextreme-aspnet-data": {
+      "devextreme": "$devextreme"
+    }
   }
 }

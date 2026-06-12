@@ -55,5 +55,10 @@
     "stylelint-scss": "^5.0.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.49.0"
+  },
+  "overrides": {
+    "devextreme-aspnet-data-nojquery": {
+      "devextreme": "$devextreme"
+    }
   }
 }
