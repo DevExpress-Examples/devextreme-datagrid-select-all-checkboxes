@@ -7,11 +7,9 @@
 
 # DevExtreme DataGrid - Implement Three-State "Select All" Checkboxes Within Group Rows
 
-This example uses a [groupCellTemplate](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/columns/#groupCellTemplate] to add custom "Select All" checkboxes to DataGrid group rows. These checkboxes can have one of the following states: checked, unchecked, and indeterminate (displayed when multiple rows are selected within a group).
+This example uses a [groupCellTemplate](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/columns/#groupCellTemplate) to add custom "Select All" checkboxes to DataGrid group rows. These checkboxes can have one of the following states: checked, unchecked, and indeterminate (displayed when multiple rows are selected within a group). This example binds the DataGrid to a remote data source and enables [remote operations](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/remoteOperations/).
 
 ![DevExtreme DataGrid - Implement Three-State "Select All" Checkboxes in Group Rows](images/devextreme-datagrid-select-all-checkbox.png)
-
-This example binds the DataGrid to a remote data source and enables [remote operations](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/remoteOperations/).
 
 To determine group row checkbox states and select/unselect rows, this example uses the [selectedRowKeys](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/#selectedRowKeys) value. To implement this functionality in a DataGrid where [deferred selection](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/selection/#deferred) is enabled, use [selectionFilter](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/#selectionFilter) instead. Refer to the following help topic for additional information about deferred selection: [DevExtreme DataGrid - Deferred Selection](https://js.devexpress.com/Documentation/Guide/UI_Components/DataGrid/Enhance_Performance_on_Large_Datasets/#Deferred_Selection).
 
