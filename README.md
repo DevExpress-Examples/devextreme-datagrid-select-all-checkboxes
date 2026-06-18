@@ -7,14 +7,14 @@
 
 # DevExtreme DataGrid - Implement Three-State "Select All" Checkboxes Within Group Rows
 
-This example uses a [groupCellTemplate](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/columns/#groupCellTemplate) to add custom "Select All" checkboxes to DataGrid group rows. These checkboxes can have one of the following states: checked, unchecked, and indeterminate (displayed when multiple rows are selected within a group). This example binds the DataGrid to a remote data source and enables [remote operations](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/remoteOperations/).
+This example uses a [groupCellTemplate](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/columns/#groupCellTemplate) to add custom "Select All" checkboxes to DataGrid group rows. These checkboxes can have one of the following states: checked, unchecked, and indeterminate (when multiple rows are selected within a group). This example binds the DataGrid to a remote data source and enables [remote operations](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/remoteOperations/).
 
 ![DevExtreme DataGrid - Implement Three-State "Select All" Checkboxes in Group Rows](images/devextreme-datagrid-select-all-checkbox.png)
 
-To determine group row checkbox states and select/unselect rows, use the following properties:
+To determine group row checkbox states and select/deselect rows, use the following properties:
 
-- [selectionFilter](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/#selectionFilter): If [selection.deferred](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/selection/#deferred) is enabled
-- [selectedRowKeys](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/#selectedRowKeys): If deferred selection is not enabled
+- [selectionFilter](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/#selectionFilter) (if [selection.deferred](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/selection/#deferred) is enabled)
+- [selectedRowKeys](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/#selectedRowKeys) (in other cases)
 
 ## Files to Review
 
