@@ -11,7 +11,10 @@ This example uses a [groupCellTemplate](https://js.devexpress.com/Documentation/
 
 ![DevExtreme DataGrid - Implement Three-State "Select All" Checkboxes in Group Rows](images/devextreme-datagrid-select-all-checkbox.png)
 
-To determine group row checkbox states and select/unselect rows, this example uses the [selectedRowKeys](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/#selectedRowKeys) value. To implement this functionality in a DataGrid where [deferred selection](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/selection/#deferred) is enabled, use [selectionFilter](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/#selectionFilter) instead. Refer to the following help topic for additional information about deferred selection: [DevExtreme DataGrid - Deferred Selection](https://js.devexpress.com/Documentation/Guide/UI_Components/DataGrid/Enhance_Performance_on_Large_Datasets/#Deferred_Selection).
+To determine group row checkbox states and select/unselect rows, use the following properties:
+
+- [selectionFilter](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/#selectionFilter): If [selection.deferred](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/selection/#deferred) is enabled
+- [selectedRowKeys](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/#selectedRowKeys): If deferred selection is not enabled
 
 ## Files to Review
 
