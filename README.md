@@ -5,9 +5,9 @@
 [![](https://img.shields.io/badge/💬_Leave_Feedback-feecdd?style=flat-square)](#does-this-example-address-your-development-requirementsobjectives)
 <!-- default badges end -->
 
-# DevExtreme DataGrid - Implement Three-State "Select All" Checkboxes Within Group Rows
+# DevExtreme DataGrid - Implement Three-State "Select All" Checkboxes within Group Rows
 
-This example uses a [groupCellTemplate](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/columns/#groupCellTemplate) to add custom "Select All" checkboxes to DataGrid group rows. These checkboxes can have one of the following states: checked, unchecked, and indeterminate (when multiple rows are selected within a group). This example binds the DataGrid to a remote data source and enables [remote operations](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/remoteOperations/).
+This example uses a [groupCellTemplate](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/columns/#groupCellTemplate) to add custom "Select All" checkboxes to DataGrid group rows. These checkboxes can be in one of the following states: checked, unchecked, and indeterminate (when multiple rows are selected within a group). This example binds the DataGrid to a remote data source and enables [remote operations](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/remoteOperations/).
 
 ![DevExtreme DataGrid - Implement Three-State "Select All" Checkboxes in Group Rows](images/devextreme-datagrid-select-all-checkbox.png)
 
