@@ -5,15 +5,16 @@
 [![](https://img.shields.io/badge/💬_Leave_Feedback-feecdd?style=flat-square)](#does-this-example-address-your-development-requirementsobjectives)
 <!-- default badges end -->
 
-# DataGrid for DevExtreme - How to implement a three-state "Select All" CheckBox in a group row 
+# DevExtreme DataGrid - Implement Three-State "Select All" Checkboxes within Group Rows
 
-This example demonstrates how to implement a custom "Select All" CheckBox in a group row to select all rows in this group. This CheckBox can have three states: unchecked, checked, or undetermined (when only several of the group members are checked).
+This example uses a [groupCellTemplate](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/columns/#groupCellTemplate) to add custom "Select All" checkboxes to DataGrid group rows. These checkboxes can be in one of the following states: checked, unchecked, and indeterminate (when multiple rows are selected within a group). This example binds the DataGrid to a remote data source and enables [remote operations](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/remoteOperations/).
 
-This example supports the [DataGrid.remoteOperations](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/remoteOperations/) option.
+![DevExtreme DataGrid - Implement Three-State "Select All" Checkboxes in Group Rows](images/devextreme-datagrid-select-all-checkbox.png)
 
-DataGrid may query all data when selecting a group row with many data records. You can use the **DataGrid.selection.maxFilterLengthInRequest** private option to increase this threshold but it may result in Error 400. Make sure that your server supports long URLs. Also, make sure to test **maxFilterLengthInRequest** after every DevExtreme upgrade since we may change this private API without notifications.
+To determine group row checkbox states and select/deselect rows, use the following properties:
 
-![image](images/devextreme-datagrid-select-all-checkbox.png)
+- [selectionFilter](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/#selectionFilter) (if [selection.deferred](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/selection/#deferred) is enabled)
+- [selectedRowKeys](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/#selectedRowKeys) (in other cases)
 
 ## Files to Review
 
@@ -35,15 +36,11 @@ DataGrid may query all data when selecting a group row with many data records. Y
     - [Home.vue](Vue/src/components/HomeContent.vue)
     - [GroupRowComponent.vue](Vue/src/components/GroupRowSelection/GroupRowComponent.vue)
     - [GroupRowSelectionHelper.ts](Vue/src/components/GroupRowSelection/GroupRowSelectionHelper.ts)
-      
-## Implementation details
-
-The GroupSelectionBehavior class uses the [customizeColumns](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/#customizeColumns) function to specify [groupCellTemplate](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/Configuration/columns/#groupCellTemplate) for all columns. This template creates a CheckBox for every group row.
 
 ## Documentation
 
-- [CheckBox - API Reference](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxCheckBox/)
-- [DataGrid - API Reference](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/)
+- [DevExtreme CheckBox API Reference](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxCheckBox/)
+- [DevExtreme DataGrid API Reference](https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxDataGrid/)
 
 ## More Examples
 
